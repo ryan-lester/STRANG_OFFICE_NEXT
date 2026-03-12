@@ -10,18 +10,10 @@ import HeadshotsScene from "./scenes/HeadshotsScene";
 import StrangLetters from "./scenes/StrangLetters";
 import VdVPhotos from "./scenes/VdVPhotos";
 
-// 1. ADD 'theme' TO YOUR MASTER_SCENES (Adjust these as needed for your specific scenes)
 const MASTER_SCENES = [
-    // Timelapse needs white text -> theme: "dark"
     { id: "timelapse", name: "VdV Timelapses", duration: 118500, component: TimelapseScene, theme: "dark" },
-
-    // Headshots needs white text -> theme: "dark"
     { id: "headshots", name: "Staff Headshots", duration: 150000, component: HeadshotsScene, theme: "dark" },
-
-    // Letters needs black text -> theme: "light"
     { id: "letters", name: "Strang Animation", duration: 23500, component: StrangLetters, theme: "light" },
-
-    // Architecture needs white text -> theme: "dark"
     { id: "architecture", name: "VdV Photos", duration: 100000, component: VdVPhotos, theme: "dark" },
 ];
 
@@ -35,7 +27,6 @@ function DisplayManager() {
     const [playlist, setPlaylist] = useState(MASTER_SCENES.map(s => ({ id: s.id, loops: 1 })));
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentLoop, setCurrentLoop] = useState(1);
-
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     const broadcastState = (playing: boolean, index: number, list: any[], loop: number, startAt?: number) => {
@@ -48,14 +39,12 @@ function DisplayManager() {
         const bc = new BroadcastChannel("strang_os_sync");
         bc.onmessage = (event) => {
             const { isPlaying, index, playlist: list, currentLoop, startAt } = event.data;
-
             const applyState = () => {
                 setPlaylist(list);
                 setIsPlaying(isPlaying);
                 setCurrentIndex(index);
                 setCurrentLoop(currentLoop);
             };
-
             if (startAt && startAt > Date.now()) {
                 setTimeout(applyState, startAt - Date.now());
             } else {
@@ -82,7 +71,6 @@ function DisplayManager() {
 
     useEffect(() => {
         if (!isPlaying || playlist.length === 0 || screenID !== "center") return;
-
         const activeSceneData = playlist[currentIndex];
         const sceneDef = MASTER_SCENES.find(s => s.id === activeSceneData.id);
 
@@ -111,12 +99,9 @@ function DisplayManager() {
     const handleGenerate = () => {
         if (isPreparing) return;
         setIsPreparing(true);
-
         const delayMs = 1200;
         const startAt = Date.now() + delayMs;
-
         broadcastState(true, 0, playlist, 1, startAt);
-
         setTimeout(() => {
             setIsPlaying(true);
             setCurrentIndex(0);
@@ -128,7 +113,7 @@ function DisplayManager() {
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable full-screen: ${err.message}`);
+                console.error(`Error enabling full-screen: ${err.message}`);
             });
         }
     };
@@ -141,27 +126,20 @@ function DisplayManager() {
         broadcastState(false, 0, playlist, 1);
     };
 
-    // --- 1. LOBBY VIEW ---
     if (!isPlaying) {
         if (screenID !== "center") {
             return (
                 <div className="min-h-screen bg-black flex flex-col items-center justify-center font-din-condensed text-white">
                     <div className="text-center">
-                        <h1 className="text-6xl tracking-[0.5em] font-bold uppercase opacity-20 animate-pulse">
-                            Standby
-                        </h1>
-                        <p className="mt-6 text-zinc-600 tracking-widest uppercase text-xl">
-                            Waiting for launch
-                        </p>
+                        <h1 className="text-6xl tracking-[0.5em] font-bold uppercase opacity-20 animate-pulse">Standby</h1>
+                        <p className="mt-6 text-zinc-600 tracking-widest uppercase text-xl">Waiting for launch</p>
                     </div>
                 </div>
             );
         }
 
         return (
-            // ... (Keep your exact existing Lobby View return block here)
             <div className="h-screen bg-black text-white font-din-condensed flex flex-col items-center">
-                {/* Omitted for brevity, keep your lobby code exactly as it is */}
                 <div className="w-full max-w-[900px] flex flex-col h-full">
                     <header className="pt-20 pb-10 px-8 border-b border-white/10 shrink-0 bg-black z-10">
                         <h1 className="text-8xl tracking-[0.1em] font-bold uppercase leading-none">STRANG OS</h1>
@@ -196,13 +174,11 @@ function DisplayManager() {
                                                 <span className="text-zinc-700 text-3xl font-bold">{index + 1}</span>
                                                 <h2 className="text-3xl tracking-widest uppercase truncate">{scene?.name}</h2>
                                             </div>
-
                                             <div className="flex items-center bg-black/40 border border-white/10 rounded shrink-0">
                                                 <button onClick={() => updateLoops(index, -1)} className="px-4 py-2 hover:bg-white/10 text-xl">-</button>
                                                 <div className="px-4 py-2 text-sm border-x border-white/10 min-w-[70px] text-center">{item.loops}L</div>
                                                 <button onClick={() => updateLoops(index, 1)} className="px-4 py-2 hover:bg-white/10 text-xl">+</button>
                                             </div>
-
                                             <button onClick={() => setPlaylist(playlist.filter((_, i) => i !== index))} className="ml-8 text-zinc-600 hover:text-red-500 text-xs tracking-widest uppercase shrink-0">Remove</button>
                                         </div>
                                     </motion.div>
@@ -229,9 +205,7 @@ function DisplayManager() {
                             onClick={handleGenerate}
                             disabled={isPreparing}
                             className={`w-full py-8 text-4xl font-bold tracking-[0.2em] transition-all uppercase ${
-                                isPreparing
-                                    ? "bg-zinc-800 text-zinc-500 cursor-wait"
-                                    : "bg-white text-black hover:bg-zinc-200"
+                                isPreparing ? "bg-zinc-800 text-zinc-500 cursor-wait" : "bg-white text-black hover:bg-zinc-200"
                             }`}
                         >
                             {isPreparing ? "Initializing..." : "Launch"}
@@ -242,16 +216,12 @@ function DisplayManager() {
         );
     }
 
-    // --- 2. BROADCAST VIEW ---
     const activeSceneData = MASTER_SCENES.find(s => s.id === playlist[currentIndex]?.id);
     const ActiveComponent = activeSceneData?.component || (() => null);
-
-    // 2. EXTRACT THE ACTIVE THEME
     const activeTheme = activeSceneData?.theme || "dark";
 
     return (
         <main className={`fixed inset-0 bg-black overflow-hidden ${isFullscreen ? 'cursor-none' : ''}`}>
-
             <div style={{ width: 2160, height: 3840, transform: `scale(${scale})`, transformOrigin: 'top left' }} className="relative bg-black">
                 <div
                     className="absolute top-0 h-[3840px] w-[6480px] transition-all duration-1000 ease-in-out"
@@ -268,28 +238,22 @@ function DisplayManager() {
                             <ActiveComponent />
                         </motion.div>
                     </AnimatePresence>
-
-                    {/* 3. PASS THEME TO UIOVERLAY */}
                     <UIOverlay theme={activeTheme} />
                 </div>
             </div>
 
             {!isFullscreen && (
                 <div className="absolute inset-x-0 bottom-20 flex justify-center z-[10003]">
-                    {/* 4. DYNAMIC BUTTON STYLING BASED ON THEME */}
                     <button
                         onClick={toggleFullscreen}
                         className={`px-12 py-6 text-4xl font-din-condensed font-bold tracking-[0.2em] uppercase shadow-2xl transition-colors ${
-                            activeTheme === "light"
-                                ? "bg-black text-white hover:bg-zinc-800" // Dark button on light backgrounds
-                                : "bg-white text-black hover:bg-zinc-300" // Light button on dark backgrounds
+                            activeTheme === "light" ? "bg-black text-white hover:bg-zinc-800" : "bg-white text-black hover:bg-zinc-300"
                         }`}
                     >
                         Enter Full Screen
                     </button>
                 </div>
             )}
-
             <button onClick={handleExit} className="fixed top-0 right-0 w-32 h-32 opacity-0 z-[10002]" />
         </main>
     );
