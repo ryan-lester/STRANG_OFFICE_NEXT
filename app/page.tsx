@@ -144,14 +144,14 @@ function DisplayManager() {
                 <div className="w-full max-w-[700px] flex flex-col h-full border-x border-white/5 bg-zinc-950/20 shadow-2xl">
                     <header className="pt-12 pb-6 px-10 border-b border-white/10 shrink-0 bg-black/50 backdrop-blur-xl z-10">
                         <div className="flex items-baseline justify-between">
-                            <h1 className="text-6xl tracking-[0.05em] font-bold uppercase leading-none">STRANG OS</h1>
+                            <h1 className="text-6xl tracking-[0.05em] font-bold uppercase leading-none">STRANG LOBBY</h1>
                             <span className="text-zinc-600 text-sm tracking-[0.3em] uppercase font-bold">V 1.0</span>
                         </div>
-                        <p className="text-zinc-600 text-xs mt-3 tracking-[0.4em] uppercase font-bold opacity-80">STATION CONTROL PANEL</p>
+                        <p className="text-zinc-600 text-xs mt-3 tracking-[0.4em] uppercase font-bold opacity-80">CONTROL PANEL</p>
                     </header>
 
                     <main className="flex-1 overflow-y-auto px-10 py-6 space-y-2 custom-scrollbar">
-                        <p className="text-zinc-700 text-[10px] tracking-[0.3em] uppercase mb-4 font-bold">Active Playlist Queue</p>
+                        <p className="text-zinc-700 text-[10px] tracking-[0.3em] uppercase mb-4 font-bold">Playlist Queue</p>
                         <AnimatePresence mode="popLayout">
                             {playlist.map((item, index) => {
                                 const scene = MASTER_SCENES.find(s => s.id === item.id);
@@ -196,7 +196,7 @@ function DisplayManager() {
                         </AnimatePresence>
 
                         <div className="pt-8 grid grid-cols-1 gap-1.5 pb-20">
-                            <p className="text-zinc-700 text-[10px] tracking-[0.3em] uppercase mb-2 font-bold">Add To Station Queue</p>
+                            <p className="text-zinc-700 text-[10px] tracking-[0.3em] uppercase mb-2 font-bold">Add To Queue</p>
                             {MASTER_SCENES.map(scene => (
                                 <button
                                     key={scene.id}
@@ -217,7 +217,7 @@ function DisplayManager() {
                                 isPreparing ? "bg-zinc-900 text-zinc-700 cursor-wait" : "bg-white text-black hover:bg-zinc-200"
                             }`}
                         >
-                            {isPreparing ? "Initializing System..." : "Launch Sync"}
+                            {isPreparing ? "Initializing System..." : "Launch"}
                         </button>
                     </footer>
                 </div>
