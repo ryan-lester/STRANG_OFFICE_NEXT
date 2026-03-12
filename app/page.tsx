@@ -126,73 +126,82 @@ function DisplayManager() {
         broadcastState(false, 0, playlist, 1);
     };
 
+    // --- 1. LOBBY VIEW (MODIFIED FOR CLEANER / SMALLER UI) ---
     if (!isPlaying) {
         if (screenID !== "center") {
             return (
                 <div className="min-h-screen bg-black flex flex-col items-center justify-center font-din-condensed text-white">
                     <div className="text-center">
-                        <h1 className="text-6xl tracking-[0.5em] font-bold uppercase opacity-20 animate-pulse">Standby</h1>
-                        <p className="mt-6 text-zinc-600 tracking-widest uppercase text-xl">Waiting for launch</p>
+                        <h1 className="text-4xl tracking-[0.5em] font-bold uppercase opacity-20 animate-pulse">Standby</h1>
+                        <p className="mt-4 text-zinc-600 tracking-widest uppercase text-sm">Waiting for launch</p>
                     </div>
                 </div>
             );
         }
 
         return (
-            <div className="h-screen bg-black text-white font-din-condensed flex flex-col items-center">
-                <div className="w-full max-w-[900px] flex flex-col h-full">
-                    <header className="pt-20 pb-10 px-8 border-b border-white/10 shrink-0 bg-black z-10">
-                        <h1 className="text-8xl tracking-[0.1em] font-bold uppercase leading-none">STRANG OS</h1>
-                        <p className="text-zinc-600 text-xl mt-4 tracking-[0.4em] uppercase font-bold">CONTROL PANEL</p>
+            <div className="h-screen bg-black text-white font-din-condensed flex flex-col items-center overflow-hidden">
+                <div className="w-full max-w-[700px] flex flex-col h-full border-x border-white/5 bg-zinc-950/20 shadow-2xl">
+                    <header className="pt-12 pb-6 px-10 border-b border-white/10 shrink-0 bg-black/50 backdrop-blur-xl z-10">
+                        <div className="flex items-baseline justify-between">
+                            <h1 className="text-6xl tracking-[0.05em] font-bold uppercase leading-none">STRANG OS</h1>
+                            <span className="text-zinc-600 text-sm tracking-[0.3em] uppercase font-bold">V 1.0</span>
+                        </div>
+                        <p className="text-zinc-600 text-xs mt-3 tracking-[0.4em] uppercase font-bold opacity-80">STATION CONTROL PANEL</p>
                     </header>
 
-                    <main className="flex-1 overflow-y-auto px-8 py-10 space-y-3 custom-scrollbar">
+                    <main className="flex-1 overflow-y-auto px-10 py-6 space-y-2 custom-scrollbar">
+                        <p className="text-zinc-700 text-[10px] tracking-[0.3em] uppercase mb-4 font-bold">Active Playlist Queue</p>
                         <AnimatePresence mode="popLayout">
                             {playlist.map((item, index) => {
                                 const scene = MASTER_SCENES.find(s => s.id === item.id);
                                 return (
-                                    <motion.div key={`${item.id}-${index}`} layout className="flex items-center bg-zinc-900/40 border border-white/5 h-24 shrink-0 overflow-hidden">
-                                        <div className="flex flex-col border-r border-white/5 h-full w-20">
+                                    <motion.div key={`${item.id}-${index}`} layout className="flex items-center bg-zinc-900/30 border border-white/5 h-16 shrink-0 group hover:border-white/20 transition-all">
+                                        <div className="flex flex-col border-r border-white/5 h-full w-12 shrink-0">
                                             <button onClick={() => {
                                                 if (index > 0) {
                                                     const p = [...playlist];
                                                     [p[index], p[index-1]] = [p[index-1], p[index]];
                                                     setPlaylist(p);
                                                 }
-                                            }} className="flex-1 hover:bg-white hover:text-black transition-colors text-2xl">↑</button>
+                                            }} className="flex-1 hover:bg-white hover:text-black transition-colors text-lg opacity-40 hover:opacity-100">↑</button>
                                             <button onClick={() => {
                                                 if (index < playlist.length - 1) {
                                                     const p = [...playlist];
                                                     [p[index], p[index+1]] = [p[index+1], p[index]];
                                                     setPlaylist(p);
                                                 }
-                                            }} className="flex-1 hover:bg-white hover:text-black transition-colors text-2xl border-t border-white/5">↓</button>
+                                            }} className="flex-1 hover:bg-white hover:text-black transition-colors text-lg border-t border-white/5 opacity-40 hover:opacity-100">↓</button>
                                         </div>
 
-                                        <div className="flex-1 px-8 flex items-center justify-between">
-                                            <div className="flex items-center gap-6 text-ellipsis overflow-hidden whitespace-nowrap">
-                                                <span className="text-zinc-700 text-3xl font-bold">{index + 1}</span>
-                                                <h2 className="text-3xl tracking-widest uppercase truncate">{scene?.name}</h2>
+                                        <div className="flex-1 px-6 flex items-center justify-between min-w-0">
+                                            <div className="flex items-center gap-4 min-w-0">
+                                                <span className="text-zinc-800 text-xl font-bold">{index + 1}</span>
+                                                <h2 className="text-xl tracking-widest uppercase truncate font-medium">{scene?.name}</h2>
                                             </div>
-                                            <div className="flex items-center bg-black/40 border border-white/10 rounded shrink-0">
-                                                <button onClick={() => updateLoops(index, -1)} className="px-4 py-2 hover:bg-white/10 text-xl">-</button>
-                                                <div className="px-4 py-2 text-sm border-x border-white/10 min-w-[70px] text-center">{item.loops}L</div>
-                                                <button onClick={() => updateLoops(index, 1)} className="px-4 py-2 hover:bg-white/10 text-xl">+</button>
+
+                                            <div className="flex items-center gap-4 shrink-0">
+                                                <div className="flex items-center bg-black/60 border border-white/5 rounded overflow-hidden">
+                                                    <button onClick={() => updateLoops(index, -1)} className="w-8 h-8 flex items-center justify-center hover:bg-white/10 text-lg">-</button>
+                                                    <div className="px-2 text-xs border-x border-white/10 min-w-[40px] text-center font-bold tracking-tighter text-zinc-400">{item.loops} L</div>
+                                                    <button onClick={() => updateLoops(index, 1)} className="w-8 h-8 flex items-center justify-center hover:bg-white/10 text-lg">+</button>
+                                                </div>
+
+                                                <button onClick={() => setPlaylist(playlist.filter((_, i) => i !== index))} className="text-zinc-700 hover:text-red-500 text-[10px] tracking-widest uppercase transition-colors px-2">Delete</button>
                                             </div>
-                                            <button onClick={() => setPlaylist(playlist.filter((_, i) => i !== index))} className="ml-8 text-zinc-600 hover:text-red-500 text-xs tracking-widest uppercase shrink-0">Remove</button>
                                         </div>
                                     </motion.div>
                                 );
                             })}
                         </AnimatePresence>
 
-                        <div className="pt-12 grid grid-cols-1 gap-2 pb-40">
-                            <p className="text-zinc-600 text-xs tracking-widest uppercase mb-2">Available Scenes</p>
+                        <div className="pt-8 grid grid-cols-1 gap-1.5 pb-20">
+                            <p className="text-zinc-700 text-[10px] tracking-[0.3em] uppercase mb-2 font-bold">Add To Station Queue</p>
                             {MASTER_SCENES.map(scene => (
                                 <button
                                     key={scene.id}
                                     onClick={() => setPlaylist([...playlist, { id: scene.id, loops: 1 }])}
-                                    className="border border-white/5 bg-zinc-900/10 p-6 text-zinc-600 hover:border-white/20 hover:text-white transition-all text-xl text-left tracking-widest uppercase"
+                                    className="border border-white/5 bg-zinc-900/10 py-4 px-6 text-zinc-500 hover:border-white/30 hover:bg-white/5 hover:text-white transition-all text-lg text-left tracking-[0.2em] uppercase font-medium"
                                 >
                                     + {scene.name}
                                 </button>
@@ -200,15 +209,15 @@ function DisplayManager() {
                         </div>
                     </main>
 
-                    <footer className="shrink-0 p-8 border-t border-white/10 bg-black/80 backdrop-blur-md flex justify-center">
+                    <footer className="shrink-0 p-10 border-t border-white/10 bg-black z-20">
                         <button
                             onClick={handleGenerate}
                             disabled={isPreparing}
-                            className={`w-full py-8 text-4xl font-bold tracking-[0.2em] transition-all uppercase ${
-                                isPreparing ? "bg-zinc-800 text-zinc-500 cursor-wait" : "bg-white text-black hover:bg-zinc-200"
+                            className={`w-full py-6 text-2xl font-bold tracking-[0.3em] transition-all uppercase shadow-2xl ${
+                                isPreparing ? "bg-zinc-900 text-zinc-700 cursor-wait" : "bg-white text-black hover:bg-zinc-200"
                             }`}
                         >
-                            {isPreparing ? "Initializing..." : "Launch"}
+                            {isPreparing ? "Initializing System..." : "Launch Sync"}
                         </button>
                     </footer>
                 </div>
