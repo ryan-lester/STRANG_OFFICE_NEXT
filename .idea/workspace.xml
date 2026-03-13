@@ -7,14 +7,8 @@
     <list default="true" id="69337836-d86c-4c77-8e76-00e5e3620e28" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/scenes/HEADSHOTS_3.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/HEADSHOTS_3.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/scenes/HEADSHOTS_4.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/HEADSHOTS_4.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/scenes/HEADSHOTS_5.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/HEADSHOTS_5.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/scenes/HEADSHOTS_6.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/HEADSHOTS_6.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/scenes/HEADSHOTS_7.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/HEADSHOTS_7.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/strang_letters/strang_letters_4k_backwards.mov" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/strang_letters/strang_letters_4k_forward.mov" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/timelapse/strang_timelapses_4k.mov" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scenes/SLIDESHOW_DRAWING_VDV.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/SLIDESHOW_DRAWING_VDV.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scenes/SLIDESHOW_KIAORA.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/SLIDESHOW_KIAORA.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +71,7 @@
       <option name="presentableId" value="Default" />
       <updated>1773273298204</updated>
       <workItem from="1773273299215" duration="17225000" />
-      <workItem from="1773412159178" duration="4542000" />
+      <workItem from="1773412159178" duration="5575000" />
     </task>
     <servers />
   </component>

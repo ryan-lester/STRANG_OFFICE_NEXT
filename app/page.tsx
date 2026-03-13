@@ -16,12 +16,8 @@ import HEADSHOTS_4 from "./scenes/HEADSHOTS_4";
 import HEADSHOTS_5 from "./scenes/HEADSHOTS_5";
 import HEADSHOTS_6 from "./scenes/HEADSHOTS_6";
 import HEADSHOTS_7 from "./scenes/HEADSHOTS_7";
-
-
-
-
-
-
+import SLIDESHOW_DRAWING_VDV from "./scenes/SLIDESHOW_DRAWING_VDV";
+import SLIDESHOW_KIAORA from "./scenes/SLIDESHOW_KIAORA";
 
 
 
@@ -37,6 +33,9 @@ const MASTER_SCENES = [
     { id: "headshots_5", name: "Headshots 5 (3m)", duration: 179500, component: HEADSHOTS_5, theme: "dark" },
     { id: "headshots_6", name: "Headshots 6 (3m)", duration: 179500, component: HEADSHOTS_6, theme: "dark" },
     { id: "headshots_7", name: "Headshots 7 (3m)", duration: 179500, component: HEADSHOTS_7, theme: "dark" },
+    { id: "vdv_sketch", name: "VDV Sketch (3m)", duration: 179500, component: SLIDESHOW_DRAWING_VDV, theme: "dark" },
+    { id: "kiaora_photo", name: "Kiaora Photo (3m)", duration: 179500, component: SLIDESHOW_KIAORA, theme: "dark" },
+
 
 
 
@@ -173,7 +172,7 @@ function DisplayManager() {
                     <header className="pt-12 pb-6 px-10 border-b border-white/10 shrink-0 bg-black/50 backdrop-blur-xl z-10">
                         <div className="flex items-baseline justify-between">
                             <h1 className="text-6xl tracking-[0.05em] font-bold uppercase leading-none">STRANG LOBBY</h1>
-                            <span className="text-zinc-600 text-sm tracking-[0.3em] uppercase font-bold">V 1.0</span>
+                            <span className="text-zinc-600 text-sm tracking-[0.3em] uppercase font-bold"></span>
                         </div>
                         <p className="text-zinc-600 text-xs mt-3 tracking-[0.4em] uppercase font-bold opacity-80">CONTROL PANEL</p>
                     </header>
