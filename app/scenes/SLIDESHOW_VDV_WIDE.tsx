@@ -1,43 +1,40 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const S3_BASE_URL = "https://strang-screens.s3.us-east-2.amazonaws.com/staff-headshots";
+// Using %20 for the space in "Slideshow 01"
+const IMAGE_URL = "https://strang-screens.s3.us-east-2.amazonaws.com/mitch_slideshows_march_2026/Slideshow+01/STRANG_SCREENS_SLIDESHOW-1.jpg";
 
-const PHOTOS = Array.from({ length: 15 }, (_, i) =>
-    `${S3_BASE_URL}/strang_slides-${i + 2}.jpg`
-);
-export default function HeadshotsScene() {
+export default function SLIDESHOW_VDV_WIDE() {
+    const DISPLAY_DURATION = 180000;
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setIndex((prev) => (prev + 1) % PHOTOS.length);
-        }, 10000);
+            setIndex((prev) => (prev + 1) % 1);
+        }, DISPLAY_DURATION);
         return () => clearInterval(timer);
     }, []);
 
     return (
-        /* The container is the full panoramic width.
-           The page.tsx "window" pans across this. */
-        <div className="w-[6480px] h-[3840px] bg-black relative">
+        <div className="w-[6480px] h-[3840px] bg-black relative overflow-hidden">
             <AnimatePresence mode="wait">
                 <motion.div
-                    key={PHOTOS[index]}
+                    key={IMAGE_URL}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 2, ease: "easeInOut" }}
                     className="absolute inset-0"
                 >
-                    {/* One single image fills the entire 6480x3840 span */}
                     <img
-                        src={PHOTOS[index]}
+                        src={IMAGE_URL}
                         className="w-full h-full object-cover"
-                        alt="Staff Headshot Panoramic"
+                        alt="VDV Wide Slideshow"
+                        onLoad={() => console.log("Image loaded successfully:", IMAGE_URL)}
+                        onError={(e) => console.error("IMAGE FAILED TO LOAD. Check this URL:", IMAGE_URL)}
                     />
-
-                    {/* Subtle aesthetic gradient spanning the whole wall */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                 </motion.div>
             </AnimatePresence>

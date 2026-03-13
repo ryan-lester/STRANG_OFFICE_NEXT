@@ -1,7 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="69337836-d86c-4c77-8e76-00e5e3620e28" name="Changes" comment="" />
+    <list default="true" id="69337836-d86c-4c77-8e76-00e5e3620e28" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scenes/HeadshotsScene.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/HeadshotsScene.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scenes/HeroScene.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scenes/StatsScene.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scenes/StrangLetters.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/StrangLetters.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scenes/TimelapseScene.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/TimelapseScene.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-10.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-11.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-12.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-13.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-14.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-15.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-16.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-3.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-4.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-5.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-6.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-7.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-8.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/strang_headshots/strang_slides-9.jpg" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -11,33 +38,49 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="package.json" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="2" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="3Aoyck0ReCZdGWd4OIgBrvb93Aj" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "master",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.Issue.Navigation&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/ryan/Downloads/STRANG_OFFICE_NEXT/STRANG_OFFICE_NEXT/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/strang-office-screens/public/timelapse" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -46,6 +89,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1773273298204</updated>
+      <workItem from="1773273299215" duration="17225000" />
+      <workItem from="1773412159178" duration="3876000" />
     </task>
     <servers />
   </component>

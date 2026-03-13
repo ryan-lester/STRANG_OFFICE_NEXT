@@ -1,43 +1,50 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const S3_BASE_URL = "https://strang-screens.s3.us-east-2.amazonaws.com/staff-headshots";
+const PHOTOS = [
+    "https://strang-screens.s3.us-east-2.amazonaws.com/mitch_slideshows_march_2026/Slideshow+04/STRANG_SCREENS_SLIDESHOW-11.jpg",
+    "https://strang-screens.s3.us-east-2.amazonaws.com/mitch_slideshows_march_2026/Slideshow+04/STRANG_SCREENS_SLIDESHOW-12.jpg",
+    "https://strang-screens.s3.us-east-2.amazonaws.com/mitch_slideshows_march_2026/Slideshow+04/STRANG_SCREENS_SLIDESHOW-13.jpg"
+];
 
-const PHOTOS = Array.from({ length: 15 }, (_, i) =>
-    `${S3_BASE_URL}/strang_slides-${i + 2}.jpg`
-);
-export default function HeadshotsScene() {
+export default function HEADSHOTS_2() {
     const [index, setIndex] = useState(0);
+    const SLIDE_DURATION = 60000;
+
+    // --- PRELOADER ---
+    useEffect(() => {
+        PHOTOS.forEach((src) => {
+            const img = new Image();
+            img.src = src;
+        });
+    }, []);
 
     useEffect(() => {
         const timer = setInterval(() => {
             setIndex((prev) => (prev + 1) % PHOTOS.length);
-        }, 10000);
+        }, SLIDE_DURATION);
         return () => clearInterval(timer);
     }, []);
 
     return (
-        /* The container is the full panoramic width.
-           The page.tsx "window" pans across this. */
-        <div className="w-[6480px] h-[3840px] bg-black relative">
+        <div className="w-[6480px] h-[3840px] bg-black relative overflow-hidden">
             <AnimatePresence mode="wait">
                 <motion.div
                     key={PHOTOS[index]}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 2, ease: "easeInOut" }}
+                    // Increased duration to 3s and changed ease for a "softer" feel
+                    transition={{ duration: 3, ease: [0.43, 0.13, 0.23, 0.96] }}
                     className="absolute inset-0"
                 >
-                    {/* One single image fills the entire 6480x3840 span */}
                     <img
                         src={PHOTOS[index]}
                         className="w-full h-full object-cover"
-                        alt="Staff Headshot Panoramic"
+                        alt={`Headshot 1 - Slide ${index + 1}`}
                     />
-
-                    {/* Subtle aesthetic gradient spanning the whole wall */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                 </motion.div>
             </AnimatePresence>

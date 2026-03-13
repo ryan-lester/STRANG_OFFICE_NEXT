@@ -6,15 +6,22 @@ import UIOverlay from "./components/UIOverlay";
 
 // --- SCENE IMPORTS ---
 import TimelapseScene from "./scenes/TimelapseScene";
-import HeadshotsScene from "./scenes/HeadshotsScene";
 import StrangLetters from "./scenes/StrangLetters";
-import VdVPhotos from "./scenes/VdVPhotos";
+import SLIDESHOW_VDV_WIDE from "./scenes/SLIDESHOW_VDV_WIDE";
+import HEADSHOTS_1 from "./scenes/HEADSHOTS_1";
+import HEADSHOTS_2 from "./scenes/HEADSHOTS_2";
+
+
+
 
 const MASTER_SCENES = [
-    { id: "timelapse", name: "VdV Timelapses", duration: 118500, component: TimelapseScene, theme: "dark" },
-    { id: "headshots", name: "Staff Headshots", duration: 150000, component: HeadshotsScene, theme: "dark" },
-    { id: "letters", name: "Strang Animation", duration: 23500, component: StrangLetters, theme: "light" },
-    { id: "architecture", name: "VdV Photos", duration: 100000, component: VdVPhotos, theme: "dark" },
+    { id: "timelapse", name: "VdV Timelapses (2m)", duration: 118500, component: TimelapseScene, theme: "dark" },
+    { id: "letters", name: "Strang Animation (24s)", duration: 23500, component: StrangLetters, theme: "light" },
+    { id: "vdv_wide_photo", name: "VDV WIDE PHOTO (3m)", duration: 179500, component: SLIDESHOW_VDV_WIDE, theme: "dark" },
+    { id: "headshots_1", name: "Headshots 1 (3m)", duration: 179500, component: HEADSHOTS_1, theme: "dark" },
+    { id: "headshots_2", name: "Headshots 2 (3m)", duration: 179500, component: HEADSHOTS_2, theme: "dark" },
+
+
 ];
 
 function DisplayManager() {

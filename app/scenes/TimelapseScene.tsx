@@ -2,6 +2,9 @@
 import { motion } from "framer-motion";
 
 export default function TimelapseScene() {
+    // New AWS S3 Link
+    const VIDEO_URL = "https://strang-screens.s3.us-east-2.amazonaws.com/timelapses/strang_timelapses_4k.mov";
+
     return (
         <div className="w-[6480px] h-[3840px] bg-black relative overflow-hidden">
             {/* Background Video Layer */}
@@ -16,9 +19,9 @@ export default function TimelapseScene() {
                     loop
                     muted
                     playsInline
+                    preload="auto"
                     className="w-full h-full object-cover"
-                    // Replace with your actual timelapse file path in /public/videos/
-                    src="/timelapse/strang_timelapses_4k.mov"
+                    src={VIDEO_URL}
                 />
 
                 {/* Subtle Vignette to keep corner text legible */}
@@ -35,6 +38,7 @@ export default function TimelapseScene() {
                 >
                     <div className="h-[2px] w-24 bg-white/50 mx-auto mb-8" />
                     <h2 className="font-din-condensed text-[80px] tracking-[0.4em] text-white/80 uppercase">
+                        {/* Title text can go here */}
                     </h2>
                 </motion.div>
             </div>
