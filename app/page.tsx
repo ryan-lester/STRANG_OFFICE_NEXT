@@ -10,6 +10,16 @@ import StrangLetters from "./scenes/StrangLetters";
 import SLIDESHOW_VDV_WIDE from "./scenes/SLIDESHOW_VDV_WIDE";
 import HEADSHOTS_1 from "./scenes/HEADSHOTS_1";
 import HEADSHOTS_2 from "./scenes/HEADSHOTS_2";
+import HEADSHOTS_3 from "./scenes/HEADSHOTS_3";
+import HEADSHOTS_4 from "./scenes/HEADSHOTS_4";
+import HEADSHOTS_5 from "./scenes/HEADSHOTS_5";
+import HEADSHOTS_6 from "./scenes/HEADSHOTS_6";
+import HEADSHOTS_7 from "./scenes/HEADSHOTS_7";
+
+
+
+
+
 
 
 
@@ -20,6 +30,15 @@ const MASTER_SCENES = [
     { id: "vdv_wide_photo", name: "VDV WIDE PHOTO (3m)", duration: 179500, component: SLIDESHOW_VDV_WIDE, theme: "dark" },
     { id: "headshots_1", name: "Headshots 1 (3m)", duration: 179500, component: HEADSHOTS_1, theme: "dark" },
     { id: "headshots_2", name: "Headshots 2 (3m)", duration: 179500, component: HEADSHOTS_2, theme: "dark" },
+    { id: "headshots_3", name: "Headshots 3 (3m)", duration: 179500, component: HEADSHOTS_3, theme: "dark" },
+    { id: "headshots_4", name: "Headshots 4 (3m)", duration: 179500, component: HEADSHOTS_4, theme: "dark" },
+    { id: "headshots_5", name: "Headshots 5 (3m)", duration: 179500, component: HEADSHOTS_5, theme: "dark" },
+    { id: "headshots_6", name: "Headshots 6 (3m)", duration: 179500, component: HEADSHOTS_6, theme: "dark" },
+    { id: "headshots_7", name: "Headshots 7 (3m)", duration: 179500, component: HEADSHOTS_7, theme: "dark" },
+
+
+
+
 
 
 ];
