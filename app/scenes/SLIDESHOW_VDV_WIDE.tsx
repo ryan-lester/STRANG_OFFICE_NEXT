@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Using %20 for the space in "Slideshow 01"
-const IMAGE_URL = "https://strang-screens.s3.us-east-2.amazonaws.com/mitch_slideshows_march_2026/Slideshow+01/STRANG_SCREENS_SLIDESHOW-1.jpg";
+// Swapping to your CloudFront domain to keep the budget at $0
+const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
+const IMAGE_URL = `${CF_URL}/mitch_slideshows_march_2026/Slideshow+01/STRANG_SCREENS_SLIDESHOW-1.jpg`;
 
 export default function SLIDESHOW_VDV_WIDE() {
-    const DISPLAY_DURATION = 180000;
+    const DISPLAY_DURATION = 180000; // 3 minutes
     const [index, setIndex] = useState(0);
 
     useEffect(() => {

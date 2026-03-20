@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Using %20 for the space in "Slideshow 01"
-const IMAGE_URL = "https://strang-screens.s3.us-east-2.amazonaws.com/mitch_slideshows_march_2026/Slideshow+05/STRANG_SCREENS_SLIDESHOW-14.jpg";
+// Using your CloudFront domain to keep that data transfer cost at $0
+const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
+const IMAGE_URL = `${CF_URL}/mitch_slideshows_march_2026/Slideshow+05/STRANG_SCREENS_SLIDESHOW-14.jpg`;
 
 export default function SLIDESHOW_DRAWING_TARPONBEND() {
-    const DISPLAY_DURATION = 180000;
+    const DISPLAY_DURATION = 180000; // 3 minutes
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
@@ -35,6 +36,7 @@ export default function SLIDESHOW_DRAWING_TARPONBEND() {
                         onLoad={() => console.log("Image loaded successfully:", IMAGE_URL)}
                         onError={(e) => console.error("IMAGE FAILED TO LOAD. Check this URL:", IMAGE_URL)}
                     />
+                    {/* Shadow overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                 </motion.div>
             </AnimatePresence>

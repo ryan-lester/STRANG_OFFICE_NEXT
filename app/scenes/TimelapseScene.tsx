@@ -2,8 +2,9 @@
 import { motion } from "framer-motion";
 
 export default function TimelapseScene() {
-    // New AWS S3 Link
-    const VIDEO_URL = "https://strang-screens.s3.us-east-2.amazonaws.com/timelapses/strang_timelapses_4k.mov";
+    // Switched to CloudFront to protect your $100 credits
+    const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
+    const VIDEO_URL = `${CF_URL}/timelapses/strang_timelapses_4k.mov`;
 
     return (
         <div className="w-[6480px] h-[3840px] bg-black relative overflow-hidden">
@@ -28,7 +29,7 @@ export default function TimelapseScene() {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
             </motion.div>
 
-            {/* Optional: Minimalist Labeling in the center screen zone */}
+            {/* Center screen zone (2160px width) */}
             <div className="absolute left-[2160px] top-0 w-[2160px] h-[3840px] flex items-center justify-center pointer-events-none">
                 <motion.div
                     initial={{ y: 20, opacity: 0 }}
@@ -38,7 +39,7 @@ export default function TimelapseScene() {
                 >
                     <div className="h-[2px] w-24 bg-white/50 mx-auto mb-8" />
                     <h2 className="font-din-condensed text-[80px] tracking-[0.4em] text-white/80 uppercase">
-                        {/* Title text can go here */}
+                        {/* Title text */}
                     </h2>
                 </motion.div>
             </div>

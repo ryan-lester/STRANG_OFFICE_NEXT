@@ -7,14 +7,17 @@ export default function StrangLetters() {
     const forwardRef = useRef<HTMLVideoElement>(null);
     const backwardRef = useRef<HTMLVideoElement>(null);
 
-    const FWD_VIDEO = "https://strang-screens.s3.us-east-2.amazonaws.com/strang_letters/strang_letters_4k_forward.mov";
-    const BWD_VIDEO = "https://strang-screens.s3.us-east-2.amazonaws.com/strang_letters/strang_letters_4k_backwards.mov";
+    // Using CloudFront to keep video streaming in the 1TB Free Tier
+    const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
+    const FWD_VIDEO = `${CF_URL}/strang_letters/strang_letters_4k_forward.mov`;
+    const BWD_VIDEO = `${CF_URL}/strang_letters/strang_letters_4k_backwards.mov`;
 
     useEffect(() => {
         const fwd = forwardRef.current;
         const bwd = backwardRef.current;
         if (!fwd || !bwd) return;
 
+        // Logic for seamless looping between forward and backward videos
         const playForward = () => {
             if (!fwd) return;
             fwd.currentTime = 0;
@@ -44,9 +47,8 @@ export default function StrangLetters() {
         };
     }, []);
 
-    // Standard video classes:
-    // - w-1/3 limits the video to exactly one screen width (2160px)
-    // - left-1/3 positions it on the second screen
+    // Layout for 3-screen setup (6480px total)
+    // Limits the video to the center screen (2160px)
     const videoClassName = "absolute top-0 left-1/3 w-1/3 h-full object-contain pointer-events-none";
 
     return (

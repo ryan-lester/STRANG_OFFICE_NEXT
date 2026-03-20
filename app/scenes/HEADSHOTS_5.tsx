@@ -3,23 +3,26 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Your CloudFront domain for the 1TB free tier
+const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
+
 const PHOTOS = [
-    "https://strang-screens.s3.us-east-2.amazonaws.com/mitch_slideshows_march_2026/Slideshow+11/STRANG_SCREENS_SLIDESHOW-29.jpg",
-    "https://strang-screens.s3.us-east-2.amazonaws.com/mitch_slideshows_march_2026/Slideshow+11/STRANG_SCREENS_SLIDESHOW-30.jpg",
-    "https://strang-screens.s3.us-east-2.amazonaws.com/mitch_slideshows_march_2026/Slideshow+11/STRANG_SCREENS_SLIDESHOW-31.jpg"
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+11/STRANG_SCREENS_SLIDESHOW-29.jpg`,
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+11/STRANG_SCREENS_SLIDESHOW-30.jpg`,
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+11/STRANG_SCREENS_SLIDESHOW-31.jpg`
 ];
 
 export default function HEADSHOTS_5() {
     const [index, setIndex] = useState(0);
     const SLIDE_DURATION = 60000;
 
-    // --- PRELOADER ---
+    // --- LAZY PRELOADER ---
+    // Only pre-fetches the next high-res image to minimize data egress
     useEffect(() => {
-        PHOTOS.forEach((src) => {
-            const img = new Image();
-            img.src = src;
-        });
-    }, []);
+        const nextIndex = (index + 1) % PHOTOS.length;
+        const img = new Image();
+        img.src = PHOTOS[nextIndex];
+    }, [index]);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -36,14 +39,13 @@ export default function HEADSHOTS_5() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    // Increased duration to 3s and changed ease for a "softer" feel
                     transition={{ duration: 3, ease: [0.43, 0.13, 0.23, 0.96] }}
                     className="absolute inset-0"
                 >
                     <img
                         src={PHOTOS[index]}
                         className="w-full h-full object-cover"
-                        alt={`Headshot 1 - Slide ${index + 1}`}
+                        alt={`Headshot 5 - Slide ${index + 1}`}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                 </motion.div>

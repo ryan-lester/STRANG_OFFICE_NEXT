@@ -2,18 +2,28 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const S3_BASE_URL = "https://strang-screens.s3.us-east-2.amazonaws.com/staff-headshots";
+// Swapped to CloudFront to hit the 1TB Free Tier
+const CF_BASE_URL = "https://d3arwlkv4f48kq.cloudfront.net/staff-headshots";
 
 const PHOTOS = Array.from({ length: 15 }, (_, i) =>
-    `${S3_BASE_URL}/strang_slides-${i + 2}.jpg`
+    `${CF_BASE_URL}/strang_slides-${i + 2}.jpg`
 );
+
 export default function HeadshotsScene() {
     const [index, setIndex] = useState(0);
+
+    // --- LAZY PRELOADER ---
+    // With 15 massive panoramic images, we ONLY want to load the next one.
+    useEffect(() => {
+        const nextIndex = (index + 1) % PHOTOS.length;
+        const img = new Image();
+        img.src = PHOTOS[nextIndex];
+    }, [index]);
 
     useEffect(() => {
         const timer = setInterval(() => {
             setIndex((prev) => (prev + 1) % PHOTOS.length);
-        }, 10000);
+        }, 10000); // 10 second rotation
         return () => clearInterval(timer);
     }, []);
 
