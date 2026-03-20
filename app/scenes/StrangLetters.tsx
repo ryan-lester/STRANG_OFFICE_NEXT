@@ -16,12 +16,14 @@ export default function StrangLetters() {
         if (!fwd || !bwd) return;
 
         const playForward = () => {
+            if (!fwd) return;
             fwd.currentTime = 0;
             fwd.style.opacity = "1";
             fwd.play().catch(() => {});
         };
 
         const playBackward = () => {
+            if (!bwd || !fwd) return;
             bwd.currentTime = 0;
             bwd.play().catch(() => {});
             fwd.style.opacity = "0";
@@ -30,7 +32,6 @@ export default function StrangLetters() {
         fwd.onended = playBackward;
         bwd.onended = playForward;
 
-        // Start the logic only after the browser confirms it can play the file
         fwd.oncanplaythrough = () => {
             setIsReady(true);
             playForward();
@@ -42,6 +43,11 @@ export default function StrangLetters() {
             fwd.oncanplaythrough = null;
         };
     }, []);
+
+    // Standard video classes:
+    // - w-1/3 limits the video to exactly one screen width (2160px)
+    // - left-1/3 positions it on the second screen
+    const videoClassName = "absolute top-0 left-1/3 w-1/3 h-full object-contain pointer-events-none";
 
     return (
         <div className="w-[6480px] h-[3840px] bg-black relative overflow-hidden">
@@ -57,7 +63,7 @@ export default function StrangLetters() {
                     muted
                     playsInline
                     preload="auto"
-                    className="absolute inset-0 w-full h-full object-contain px-[10%] pointer-events-none z-10"
+                    className={`${videoClassName} z-10`}
                     src={BWD_VIDEO}
                 />
 
@@ -67,7 +73,7 @@ export default function StrangLetters() {
                     muted
                     playsInline
                     preload="auto"
-                    className="absolute inset-0 w-full h-full object-contain px-[10%] pointer-events-none z-20 transition-opacity duration-300"
+                    className={`${videoClassName} z-20 transition-opacity duration-300`}
                     src={FWD_VIDEO}
                 />
             </motion.div>
