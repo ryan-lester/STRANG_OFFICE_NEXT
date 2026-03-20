@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -55,12 +56,22 @@ function DisplayManager() {
     const [playlist, setPlaylist] = useState(MASTER_SCENES.map(s => ({ id: s.id, loops: 1 })));
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentLoop, setCurrentLoop] = useState(1);
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     const broadcastState = (playing: boolean, index: number, list: any[], loop: number, startAt?: number) => {
         const bc = new BroadcastChannel("strang_os_sync");
         bc.postMessage({ isPlaying: playing, index, playlist: list, currentLoop: loop, startAt });
         bc.close();
     };
+
+    // Track full screen state
+    useEffect(() => {
+        const onFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+        document.addEventListener("fullscreenchange", onFullscreenChange);
+        return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+    }, []);
 
     useEffect(() => {
         const bc = new BroadcastChannel("strang_os_sync");
@@ -109,6 +120,37 @@ function DisplayManager() {
         return () => clearTimeout(timer);
     }, [isPlaying, currentIndex, currentLoop, playlist, screenID]);
 
+    const handleGenerate = () => {
+        if (isPreparing) return;
+
+        // --- REQUEST FULL SCREEN ---
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen().catch((err) => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+            });
+        }
+
+        setIsPreparing(true);
+        const startAt = Date.now() + 1200;
+        broadcastState(true, 0, playlist, 1, startAt);
+
+        setTimeout(() => {
+            setIsPlaying(true);
+            setCurrentIndex(0);
+            setCurrentLoop(1);
+            setIsPreparing(false);
+        }, 1200);
+    };
+
+    const handleExit = () => {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
+        setIsPlaying(false);
+        broadcastState(false, 0, playlist, 1);
+    };
+
     const updateLoops = (index: number, delta: number) => {
         const newPlaylist = [...playlist];
         newPlaylist[index].loops = Math.max(1, newPlaylist[index].loops + delta);
@@ -123,25 +165,6 @@ function DisplayManager() {
             [newPlaylist[index], newPlaylist[index + 1]] = [newPlaylist[index + 1], newPlaylist[index]];
         }
         setPlaylist(newPlaylist);
-    };
-
-    const handleGenerate = () => {
-        if (isPreparing) return;
-        setIsPreparing(true);
-        const startAt = Date.now() + 1200;
-        broadcastState(true, 0, playlist, 1, startAt);
-        setTimeout(() => {
-            setIsPlaying(true);
-            setCurrentIndex(0);
-            setCurrentLoop(1);
-            setIsPreparing(false);
-        }, 1200);
-    };
-
-    const handleExit = () => {
-        if (document.fullscreenElement) document.exitFullscreen();
-        setIsPlaying(false);
-        broadcastState(false, 0, playlist, 1);
     };
 
     if (!isPlaying) {
@@ -181,8 +204,8 @@ function DisplayManager() {
                     </button>
                 </header>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
-                    <section className="p-10 border-b border-white/5 bg-zinc-900/10">
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-10">
+                    <section className="mb-12 border-b border-white/5 pb-12">
                         <div className="flex justify-between items-center mb-6">
                             <p className="text-[9px] text-zinc-600 tracking-[0.4em] uppercase">Active Sequence</p>
                             <button onClick={() => setPlaylist([])} className="text-[9px] text-red-900 hover:text-red-500 uppercase tracking-widest">Clear All</button>
@@ -239,7 +262,7 @@ function DisplayManager() {
                         </div>
                     </section>
 
-                    <section className="p-10 pb-32">
+                    <section className="pb-32">
                         <p className="text-[9px] text-zinc-600 tracking-[0.4em] uppercase mb-6">Master Library</p>
                         <div className="grid grid-cols-1 gap-2">
                             {MASTER_SCENES.map(scene => (
@@ -264,7 +287,7 @@ function DisplayManager() {
     const activeTheme = activeSceneData?.theme || "dark";
 
     return (
-        <main className="fixed inset-0 bg-black overflow-hidden">
+        <main className={`fixed inset-0 bg-black overflow-hidden ${isFullscreen ? 'cursor-none' : ''}`}>
             <div style={{ width: 2160, height: 3840, transform: `scale(${scale})`, transformOrigin: 'top left' }} className="relative bg-black">
                 <div
                     className="absolute top-0 h-[3840px] w-[6480px] transition-all duration-1000 ease-in-out"
@@ -284,7 +307,23 @@ function DisplayManager() {
                     <UIOverlay theme={activeTheme} />
                 </div>
             </div>
-            <button onClick={handleExit} className="fixed top-0 right-0 w-32 h-32 opacity-0 z-[10002]" />
+
+            {/* Enter Full Screen Button (only visible if playing but not fullscreen) */}
+            {!isFullscreen && (
+                <div className="absolute inset-x-0 bottom-20 flex justify-center z-[10003]">
+                    <button
+                        onClick={() => document.documentElement.requestFullscreen()}
+                        className={`px-12 py-6 text-4xl font-bold tracking-[0.2em] uppercase shadow-2xl transition-colors ${
+                            activeTheme === "light" ? "bg-black text-white hover:bg-zinc-800" : "bg-white text-black hover:bg-zinc-300"
+                        }`}
+                    >
+                        Enter Full Screen
+                    </button>
+                </div>
+            )}
+
+            {/* Invisible exit button in top right */}
+            <button onClick={handleExit} className="fixed top-0 right-0 w-32 h-32 opacity-0 z-[10002]" aria-label="Exit Display" />
         </main>
     );
 }
