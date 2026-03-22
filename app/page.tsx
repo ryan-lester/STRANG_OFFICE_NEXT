@@ -24,6 +24,8 @@ import SLIDESHOW_ANGELOAKS_TARPONBEND from "./scenes/SLIDESHOW_ANGELOAKS_TARPONB
 import SLIDESHOW_FIVEPALMS_REVERSREACH from "@/app/scenes/SLIDESHOW_FIVEPALMS_REVERSREACH";
 import SLIDESHOW_DRAWING_ROCKHOUSE from "@/app/scenes/SLIDESHOW_DRAWING_ROCKHOUSE";
 import SLIDESHOW_ROCKHOUSE from "@/app/scenes/SLIDESHOW_ROCKHOUSE";
+import BTS_1 from "@/app/scenes/BTS_1";
+
 
 const MASTER_SCENES = [
     { id: "letters", name: "Strang Animation", duration: 23500, component: StrangLetters, theme: "light" },
@@ -32,6 +34,7 @@ const MASTER_SCENES = [
     { id: "headshots_1", name: "Headshots 01", duration: 179500, component: HEADSHOTS_1, theme: "dark" },
     { id: "wildwood_palm", name: "Wildwood Palm", duration: 179500, component: SLIDESHOW_WILDWOOD_PALM, theme: "dark" },
     { id: "headshots_2", name: "Headshots 02", duration: 179500, component: HEADSHOTS_2, theme: "dark" },
+    { id: "bts_1", name: "BTS 01", duration: 179500, component: BTS_1, theme: "dark" },
     { id: "tarpon_bend_photo", name: "Tarpon Bend Drawing", duration: 179500, component: SLIDESHOW_DRAWING_TARPONBEND, theme: "dark" },
     { id: "angeloaks_tarponbend", name: "Angel Oaks / Tarpon Bend", duration: 179500, component: SLIDESHOW_ANGELOAKS_TARPONBEND, theme: "dark" },
     { id: "headshots_3", name: "Headshots 03", duration: 179500, component: HEADSHOTS_3, theme: "dark" },
@@ -44,6 +47,7 @@ const MASTER_SCENES = [
     { id: "fivepalms_riversreach", name: "Five Palms / Rivers Reach", duration: 179500, component: SLIDESHOW_FIVEPALMS_REVERSREACH, theme: "dark" },
     { id: "headshots_7", name: "Headshots 07", duration: 179500, component: HEADSHOTS_7, theme: "dark" },
     { id: "rockhouse", name: "Rockhouse Photo", duration: 179500, component: SLIDESHOW_ROCKHOUSE, theme: "dark" },
+
 ];
 
 function DisplayManager() {
