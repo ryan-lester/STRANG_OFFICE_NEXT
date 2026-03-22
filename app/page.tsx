@@ -36,7 +36,7 @@ const MASTER_SCENES = [
     { id: "wildwood_palm", name: "Wildwood Palm", duration: 179500, component: SLIDESHOW_WILDWOOD_PALM, theme: "dark" },
     { id: "headshots_2", name: "Headshots 02", duration: 179500, component: HEADSHOTS_2, theme: "dark" },
     { id: "bts_1", name: "BTS 01", duration: 179500, component: BTS_1, theme: "dark" },
-    { id: "miami_vice", name: "Miami Vice Segment", duration: 64500, component: MIAMI_VICE_ROCKHOUSE, theme: "dark" },
+    { id: "miami_vice", name: "Miami Vice Segment", duration: 62000, component: MIAMI_VICE_ROCKHOUSE, theme: "dark" },
     { id: "tarpon_bend_photo", name: "Tarpon Bend Drawing", duration: 179500, component: SLIDESHOW_DRAWING_TARPONBEND, theme: "dark" },
     { id: "angeloaks_tarponbend", name: "Angel Oaks / Tarpon Bend", duration: 179500, component: SLIDESHOW_ANGELOAKS_TARPONBEND, theme: "dark" },
     { id: "headshots_3", name: "Headshots 03", duration: 179500, component: HEADSHOTS_3, theme: "dark" },
