@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from "framer-motion";
 const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
 
 const PHOTOS = [
-    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+02/STRANG_SCREENS_SLIDESHOW-2.jpg`,
-    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+02/STRANG_SCREENS_SLIDESHOW-3.jpg`,
-    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+02/STRANG_SCREENS_SLIDESHOW-4.jpg`
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+02/Foyer_Slideshow+02+update_01-1.jpg`,
+    `${CF_URL}mitch_slideshows_march_2026/Slideshow+02/Foyer_Slideshow+02+update_02-2.jpg`,
+    `${CF_URL}mitch_slideshows_march_2026/Slideshow+02/Foyer_Slideshow+02+update_03-3.jpg`
 ];
 
 export default function HEADSHOTS_1() {
