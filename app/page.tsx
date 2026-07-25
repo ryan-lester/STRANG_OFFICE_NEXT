@@ -26,9 +26,13 @@ import SLIDESHOW_DRAWING_ROCKHOUSE from "@/app/scenes/SLIDESHOW_DRAWING_ROCKHOUS
 import SLIDESHOW_ROCKHOUSE from "@/app/scenes/SLIDESHOW_ROCKHOUSE";
 import BTS_1 from "@/app/scenes/BTS_1";
 import MIAMI_VICE_ROCKHOUSE from "@/app/scenes/MIAMI_VICE_ROCKHOUSE";
+import RockHouseVideo from "@/app/scenes/ROCKHOUSE_VIDEO";
 
 
 const MASTER_SCENES = [
+
+    { id: "rock_house_video", name: "Rock House Video", duration: 174000, component: RockHouseVideo, theme: "dark" },
+    /*
     { id: "letters", name: "Strang Animation", duration: 23500, component: StrangLetters, theme: "light" },
     { id: "timelapse", name: "VdV Timelapses", duration: 118500, component: TimelapseScene, theme: "dark" },
     { id: "vdv_wide_photo", name: "VDV Wide Photo", duration: 179500, component: SLIDESHOW_VDV_WIDE, theme: "dark" },
@@ -49,7 +53,7 @@ const MASTER_SCENES = [
     { id: "fivepalms_riversreach", name: "Five Palms / Rivers Reach", duration: 179500, component: SLIDESHOW_FIVEPALMS_REVERSREACH, theme: "dark" },
     { id: "headshots_7", name: "Headshots 07", duration: 179500, component: HEADSHOTS_7, theme: "dark" },
     { id: "rockhouse", name: "Rockhouse Photo", duration: 179500, component: SLIDESHOW_ROCKHOUSE, theme: "dark" },
-
+*/
 ];
 
 function DisplayManager() {
@@ -129,7 +133,7 @@ function DisplayManager() {
     const handleGenerate = () => {
         if (isPreparing) return;
 
-        // --- REQUEST FULL SCREEN ---
+        // --- RE QUEST FULL SCREEN ---
         const elem = document.documentElement;
         if (elem.requestFullscreen) {
             elem.requestFullscreen().catch((err) => {
