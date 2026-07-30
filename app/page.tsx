@@ -63,12 +63,14 @@ export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVid
         if (!video || !syncStartTime) return;
 
         let frameId: number;
+        let isStarted = false;
 
         const syncLoop = () => {
             const now = Date.now();
-            const expectedTime = Math.max(0, (now - syncStartTime) / 1000);
+            const elapsed = now - syncStartTime;
 
-            if (!video.paused) {
+            if (!video.paused && isStarted) {
+                const expectedTime = Math.max(0, elapsed / 1000);
                 const drift = video.currentTime - expectedTime;
 
                 // Hard seek ONLY if way out of sync (>1.0s) to avoid decoder stutter
@@ -84,12 +86,13 @@ export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVid
                 } else {
                     video.playbackRate = 1.0;
                 }
-            } else if (now >= syncStartTime) {
-                // INSTANT LAUNCH AT T=0
-                // Hard-snap currentTime right as play starts to erase OS thread delays
-                video.currentTime = expectedTime;
-                video.playbackRate = 1.0;
-                video.play().catch(() => {});
+            } else if (now >= syncStartTime && !isStarted) {
+                isStarted = true;
+                // Tiny 100ms offset prevents the massive 6480px canvas from freezing the main thread on play
+                video.currentTime = 0.1;
+                video.play().then(() => {
+                    video.currentTime = Math.max(0, (Date.now() - syncStartTime) / 1000);
+                }).catch(() => {});
             }
 
             frameId = requestAnimationFrame(syncLoop);
@@ -122,10 +125,21 @@ export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVid
     );
 }
 
-const MASTER_SCENES = [
+// --- SCENE PROP TYPE DEFINITION ---
+export interface SceneProps {
+    syncStartTime?: number | null;
+}
+
+const MASTER_SCENES: {
+    id: string;
+    name: string;
+    duration: number;
+    component: React.ComponentType<SceneProps>;
+    theme: "dark" | "light";
+}[] = [
     { id: "rock_house_video", name: "Rock House Video", duration: 174000, component: RockHouseVideo, theme: "dark" },
+    { id: "miami_vice", name: "Miami Vice Segment", duration: 62000, component: MIAMI_VICE_ROCKHOUSE, theme: "dark" },
     /*
-        { id: "miami_vice", name: "Miami Vice Segment", duration: 62000, component: MIAMI_VICE_ROCKHOUSE, theme: "dark" },
     { id: "letters", name: "Strang Animation", duration: 23500, component: StrangLetters, theme: "light" },
     { id: "timelapse", name: "VdV Timelapses", duration: 118500, component: TimelapseScene, theme: "dark" },
     { id: "vdv_wide_photo", name: "VDV Wide Photo", duration: 179500, component: SLIDESHOW_VDV_WIDE, theme: "dark" },
