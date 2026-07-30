@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import UIOverlay from "./components/UIOverlay";
+import { SceneProps, preloadVideo } from "./components/SyncedVideo";
 
 // --- SCENE IMPORTS ---
 import TimelapseScene from "./scenes/TimelapseScene";
@@ -26,109 +27,7 @@ import SLIDESHOW_DRAWING_ROCKHOUSE from "@/app/scenes/SLIDESHOW_DRAWING_ROCKHOUS
 import SLIDESHOW_ROCKHOUSE from "@/app/scenes/SLIDESHOW_ROCKHOUSE";
 import BTS_1 from "@/app/scenes/BTS_1";
 import MIAMI_VICE_ROCKHOUSE from "@/app/scenes/MIAMI_VICE_ROCKHOUSE";
-import RockHouseVideo from "@/app/scenes/ROCKHOUSE_VIDEO";
-
-// --- FRAME-ACCURATE SYNCED VIDEO WRAPPER ---
-export interface SyncedVideoProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
-    src: string;
-    syncStartTime?: number | null;
-    onReady?: () => void;
-}
-
-export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVideoProps) {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const hasPrewarmedRef = useRef(false);
-
-    // 1. PRE-WARM DECODER: Decode Frame 0 immediately during countdown so .play() has zero latency
-    useEffect(() => {
-        const video = videoRef.current;
-        if (!video) return;
-
-        const handleCanPlay = () => {
-            if (!hasPrewarmedRef.current) {
-                hasPrewarmedRef.current = true;
-                // Nudge playhead to 1ms to force GPU frame-decode into buffer before countdown ends
-                video.currentTime = 0.001;
-            }
-            if (onReady) onReady();
-        };
-
-        video.addEventListener("canplaythrough", handleCanPlay);
-        return () => video.removeEventListener("canplaythrough", handleCanPlay);
-    }, [onReady]);
-
-    // 2. HIGH-PRECISION LOCK ENGINE
-    useEffect(() => {
-        const video = videoRef.current;
-        if (!video || !syncStartTime) return;
-
-        let frameId: number;
-        let isStarted = false;
-
-        const syncLoop = () => {
-            const now = Date.now();
-            const elapsed = now - syncStartTime;
-
-            if (!video.paused && isStarted) {
-                const expectedTime = Math.max(0, elapsed / 1000);
-                const drift = video.currentTime - expectedTime;
-
-                // Hard seek ONLY if way out of sync (>1.0s) to avoid decoder stutter
-                if (Math.abs(drift) > 1.0) {
-                    video.currentTime = expectedTime;
-                    video.playbackRate = 1.0;
-                }
-                // Gentle playbackRate nudging with an 80ms deadzone (~2 frames)
-                else if (drift < -0.08) {
-                    video.playbackRate = 1.03;
-                } else if (drift > 0.08) {
-                    video.playbackRate = 0.97;
-                } else {
-                    video.playbackRate = 1.0;
-                }
-            } else if (now >= syncStartTime && !isStarted) {
-                isStarted = true;
-                // Tiny 100ms offset prevents the massive 6480px canvas from freezing the main thread on play
-                video.currentTime = 0.1;
-                video.play().then(() => {
-                    video.currentTime = Math.max(0, (Date.now() - syncStartTime) / 1000);
-                }).catch(() => {});
-            }
-
-            frameId = requestAnimationFrame(syncLoop);
-        };
-
-        frameId = requestAnimationFrame(syncLoop);
-        return () => {
-            cancelAnimationFrame(frameId);
-            if (video) video.playbackRate = 1.0;
-        };
-    }, [syncStartTime]);
-
-    return (
-        <video
-            ref={videoRef}
-            src={src}
-            preload="auto"
-            muted
-            playsInline
-            style={{
-                border: "none",
-                outline: "none",
-                boxShadow: "none",
-                transform: "scale(1.005)",
-                transformOrigin: "center center",
-            }}
-            className="w-full h-full object-cover border-0 outline-none"
-            {...props}
-        />
-    );
-}
-
-// --- SCENE PROP  TYPE DEFINITION ---
-export interface SceneProps {
-    syncStartTime?: number | null;
-}
+import RockHouseVideo, { VIDEO_URL as ROCKHOUSE_VIDEO_URL } from "@/app/scenes/ROCKHOUSE_VIDEO";
 
 const MASTER_SCENES: {
     id: string;
@@ -136,8 +35,9 @@ const MASTER_SCENES: {
     duration: number;
     component: React.ComponentType<SceneProps>;
     theme: "dark" | "light";
+    videoUrls?: string[];
 }[] = [
-    { id: "rock_house_video", name: "Rock House Video", duration: 174000, component: RockHouseVideo, theme: "dark" },
+    { id: "rock_house_video", name: "Rock House Video", duration: 174000, component: RockHouseVideo, theme: "dark", videoUrls: [ROCKHOUSE_VIDEO_URL] },
     /*
         { id: "miami_vice", name: "Miami Vice Segment", duration: 62000, component: MIAMI_VICE_ROCKHOUSE, theme: "dark" },
     { id: "letters", name: "Strang Animation", duration: 23500, component: StrangLetters, theme: "light" },
@@ -176,9 +76,11 @@ function DisplayManager() {
     const [currentLoop, setCurrentLoop] = useState(1);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [syncStartTime, setSyncStartTime] = useState<number | null>(null);
+    const [readyScreens, setReadyScreens] = useState<Set<string>>(new Set());
+    const [preloadProgress, setPreloadProgress] = useState<number | null>(0);
 
     const broadcastState = (
-        type: "START_COUNTDOWN" | "EXECUTE_START" | "STOP",
+        type: "START_COUNTDOWN" | "EXECUTE_START" | "STOP" | "SCREEN_READY",
         payload: any = {}
     ) => {
         const bc = new BroadcastChannel("strang_os_sync");
@@ -198,7 +100,12 @@ function DisplayManager() {
     useEffect(() => {
         const bc = new BroadcastChannel("strang_os_sync");
         bc.onmessage = (event) => {
-            const { type, isPlaying, index, playlist: list, currentLoop, startTime } = event.data;
+            const { type, isPlaying, index, playlist: list, currentLoop, startTime, screenID: fromScreen } = event.data;
+
+            if (type === "SCREEN_READY") {
+                setReadyScreens((prev) => new Set(prev).add(fromScreen));
+                return;
+            }
 
             if (type === "START_COUNTDOWN") {
                 setPlaylist(list);
@@ -247,6 +154,54 @@ function DisplayManager() {
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
+    // --- PROACTIVE PRELOAD ---
+    // Starts downloading whatever video the current playlist needs the
+    // moment this screen's page loads — independent of isPlaying/Launch —
+    // so the file is already 100% local well before anyone hits Launch.
+    // Once done, this screen announces itself as ready; center only allows
+    // Launch once left, center, and right have all reported in.
+    const neededVideoUrls = playlist
+        .flatMap((item) => MASTER_SCENES.find((s) => s.id === item.id)?.videoUrls || [])
+        .filter((v, i, arr) => arr.indexOf(v) === i);
+    const neededVideoUrlsKey = neededVideoUrls.join(",");
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const markReady = () => {
+            if (cancelled) return;
+            setPreloadProgress(100);
+            setReadyScreens((prev) => new Set(prev).add(screenID));
+            broadcastState("SCREEN_READY", { screenID });
+        };
+
+        if (neededVideoUrls.length === 0) {
+            markReady();
+            return;
+        }
+
+        setPreloadProgress(0);
+        Promise.all(
+            neededVideoUrls.map(
+                (url) =>
+                    new Promise<void>((resolve, reject) => {
+                        preloadVideo(url, (pct) => {
+                            if (pct !== null && !cancelled) setPreloadProgress(pct);
+                        })
+                            .then(() => resolve())
+                            .catch(reject);
+                    })
+            )
+        )
+            .then(markReady)
+            .catch((err) => console.error("Preload failed:", err));
+
+        return () => {
+            cancelled = true;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [neededVideoUrlsKey, screenID]);
 
     // --- HIGH-PRECISION CLOCK FOR NEXT-SCENE ROLLER ---
     useEffect(() => {
@@ -309,8 +264,10 @@ function DisplayManager() {
         }
     };
 
+    const allScreensReady = ["left", "center", "right"].every((id) => readyScreens.has(id));
+
     const handleGenerate = () => {
-        if (isPreparing) return;
+        if (isPreparing || !allScreensReady) return;
         setIsPreparing(true);
 
         // Schedule exact playback start 3,000 milliseconds in the future
@@ -382,11 +339,22 @@ function DisplayManager() {
                     {/* Single Launch Button */}
                     <button
                         onClick={handleGenerate}
-                        disabled={isPreparing || playlist.length === 0}
+                        disabled={isPreparing || playlist.length === 0 || !allScreensReady}
                         className="w-full bg-white text-black py-6 text-xl font-bold tracking-wider uppercase hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-10"
                     >
-                        {isPreparing ? "Initializing..." : "Launch"}
+                        {isPreparing
+                            ? "Initializing..."
+                            : !allScreensReady
+                                ? preloadProgress !== null && preloadProgress < 100
+                                    ? `Preloading Video... ${preloadProgress}%`
+                                    : `Waiting on Screens (${readyScreens.size}/3)`
+                                : "Launch"}
                     </button>
+                    {!allScreensReady && (
+                        <p className="text-xs text-zinc-600 uppercase tracking-wider mt-3 text-center">
+                            {["left", "center", "right"].map((id) => `${id} ${readyScreens.has(id) ? "✓" : "…"}`).join("   ")}
+                        </p>
+                    )}
                 </header>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-10">
