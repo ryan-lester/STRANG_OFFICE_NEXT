@@ -60,7 +60,7 @@ export function preloadVideo(src: string, onProgress?: (pct: number | null) => v
             notifyProgress(src, total ? Math.round((received / total) * 100) : null);
         }
 
-        const blob = new Blob(chunks);
+        const blob = new Blob(chunks as BlobPart[]);
         const objectUrl = URL.createObjectURL(blob);
         notifyProgress(src, 100);
         return objectUrl;
