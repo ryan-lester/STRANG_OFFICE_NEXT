@@ -125,7 +125,7 @@ export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVid
     );
 }
 
-// --- SCENE PROP TYPE DEFINITION ---
+// --- SCENE PROP  TYPE DEFINITION ---
 export interface SceneProps {
     syncStartTime?: number | null;
 }
