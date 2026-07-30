@@ -138,8 +138,8 @@ const MASTER_SCENES: {
     theme: "dark" | "light";
 }[] = [
     { id: "rock_house_video", name: "Rock House Video", duration: 174000, component: RockHouseVideo, theme: "dark" },
-    { id: "miami_vice", name: "Miami Vice Segment", duration: 62000, component: MIAMI_VICE_ROCKHOUSE, theme: "dark" },
     /*
+        { id: "miami_vice", name: "Miami Vice Segment", duration: 62000, component: MIAMI_VICE_ROCKHOUSE, theme: "dark" },
     { id: "letters", name: "Strang Animation", duration: 23500, component: StrangLetters, theme: "light" },
     { id: "timelapse", name: "VdV Timelapses", duration: 118500, component: TimelapseScene, theme: "dark" },
     { id: "vdv_wide_photo", name: "VDV Wide Photo", duration: 179500, component: SLIDESHOW_VDV_WIDE, theme: "dark" },
