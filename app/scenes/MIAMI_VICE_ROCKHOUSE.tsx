@@ -1,6 +1,6 @@
 "use client";
 
-import { SyncedVideo } from "@/app/page";
+import { SyncedVideo } from "@/app/components/SyncedVideo";
 
 export default function MIAMI_VICE_ROCKHOUSE({ syncStartTime }: { syncStartTime?: number | null }) {
     // Switched to CloudFront to protect your $100 credits
