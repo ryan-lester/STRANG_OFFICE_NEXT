@@ -37,7 +37,6 @@ export default function RockHouseVideo() {
                     transition={{ delay: 1, duration: 1.5 }}
                     className="text-center"
                 >
-                    <div className="h-[2px] w-24 bg-white/50 mx-auto mb-8" />
                     <h2 className="font-din-condensed text-[80px] tracking-[0.4em] text-white/80 uppercase">
                         {/* Title text */}
                     </h2>
