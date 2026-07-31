@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="69337836-d86c-4c77-8e76-00e5e3620e28" name="Changes" comment="" />
+    <list default="true" id="69337836-d86c-4c77-8e76-00e5e3620e28" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/SyncedVideo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/SyncedVideo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scenes/ROCKHOUSE_VIDEO.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/scenes/ROCKHOUSE_VIDEO.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,6 +74,8 @@
       <workItem from="1773412159178" duration="6242000" />
       <workItem from="1774018210473" duration="11907000" />
       <workItem from="1774818573778" duration="2125000" />
+      <workItem from="1784918235651" duration="18635000" />
+      <workItem from="1785443990145" duration="2074000" />
     </task>
     <servers />
   </component>

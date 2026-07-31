@@ -2,28 +2,19 @@
 
 import { useState, useEffect, useRef } from "react";
 
-// --- FRAME-ACCURATE SYNCED VIDEO WRAPPER ---
-// Shared by page.tsx (playlist/orchestration) and every video-based scene
-// (e.g. ROCKHOUSE_VIDEO.tsx). Pulled into its own file so scene components
-// can import it without creating a circular dependency on app/page.tsx.
-
 export interface SyncedVideoProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
     src: string;
     syncStartTime?: number | null;
     onReady?: () => void;
+    screenID?: "left" | "center" | "right" | string;
 }
 
-// --- SCENE PROP TYPE DEFINITION ---
 export interface SceneProps {
     syncStartTime?: number | null;
+    screenID?: string;
 }
 
-// --- SHARED BLOB CACHE + PRELOADER ---
-// Module-level, so a video can start downloading the moment a screen's page
-// loads — well before any scene mounts or Launch is clicked — and any
-// component (the orchestrator in page.tsx, or SyncedVideo itself once the
-// scene finally mounts) can await/observe the same in-flight download
-// instead of starting a second one.
+// SHARED BLOB CACHE + PRELOADER
 const blobCache = new Map<string, Promise<string>>();
 const progressListeners = new Map<string, Set<(pct: number | null) => void>>();
 
@@ -44,9 +35,6 @@ export function preloadVideo(src: string, onProgress?: (pct: number | null) => v
         const res = await fetch(src);
         if (!res.ok || !res.body) throw new Error(`Fetch failed: ${res.status}`);
 
-        // Content-Length is only readable cross-origin if the host sends
-        // Access-Control-Expose-Headers: Content-Length. If it's missing we
-        // just can't show a percentage — download still works fine.
         const total = Number(res.headers.get("Content-Length")) || 0;
         const reader = res.body.getReader();
         const chunks: Uint8Array[] = [];
@@ -70,14 +58,12 @@ export function preloadVideo(src: string, onProgress?: (pct: number | null) => v
     return promise;
 }
 
-export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVideoProps) {
+export function SyncedVideo({ src, syncStartTime, onReady, screenID = "center", ...props }: SyncedVideoProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const hasPrewarmedRef = useRef(false);
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
 
-    // 0. FULL PRELOAD: reuse (or start) the shared download for this URL, so
-    // that if page.tsx already preloaded it before the scene mounted, this
-    // resolves instantly instead of re-fetching.
+    // 0. FULL PRELOAD (Download file 100% into RAM before mounting)
     useEffect(() => {
         let cancelled = false;
         setBlobUrl(null);
@@ -89,7 +75,7 @@ export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVid
             })
             .catch((err) => {
                 console.error("Video preload failed, falling back to direct src:", src, err);
-                if (!cancelled) setBlobUrl(src); // fall back so playback isn't blocked entirely
+                if (!cancelled) setBlobUrl(src);
             });
 
         return () => {
@@ -97,8 +83,7 @@ export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVid
         };
     }, [src]);
 
-    // 1. PRE-WARM DECODER: Decode Frame 0 immediately once the fully-loaded
-    // blob is attached, so .play() has zero latency when sync kicks in.
+    // 1. PRE-WARM DECODER
     useEffect(() => {
         const video = videoRef.current;
         if (!video || !blobUrl) return;
@@ -115,63 +100,49 @@ export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVid
         return () => video.removeEventListener("canplaythrough", handleCanPlay);
     }, [blobUrl, onReady]);
 
-    // 2. HIGH-PRECISION LOCK ENGINE
+    // 2. ZERO-JITTER SYNC LOCK
+    // We REMOVED the playbackRate flapping (0.98 / 1.02) entirely.
+    // The video plays natively at 1.0x speed without browser buffer resets.
     useEffect(() => {
         const video = videoRef.current;
         if (!video || !syncStartTime || !blobUrl) return;
 
         let frameId: number;
         let isStarted = false;
-        let lastCorrectionAt = 0;
-        let appliedRate = 1.0;
-        // Hysteresis: only start nudging the rate once drift exceeds ENTER,
-        // and don't relax back to 1.0x until drift falls under EXIT. Without
-        // this, drift sitting right on a single threshold makes playbackRate
-        // flap between 0.97/1.0/1.03 many times a second — that flapping is
-        // what reads as stutter/jitter, not the video file itself. Also only
-        // re-evaluate a few times a second instead of every frame, since the
-        // browser doesn't even finish responding to a rate change in 16ms.
-        let correcting = false;
-        const ENTER_DRIFT = 0.15;
-        const EXIT_DRIFT = 0.04;
-        const CORRECTION_INTERVAL_MS = 200;
+        let lastCheckAt = 0;
 
-        const setRate = (rate: number) => {
-            if (appliedRate !== rate) {
-                video.playbackRate = rate;
-                appliedRate = rate;
-            }
-        };
+        // Force native speed — never change this dynamically!
+        video.playbackRate = 1.0;
+
+        // Only check once every 500ms, and ONLY hard-seek if a screen drifts
+        // more than 200ms off-clock (e.g. if the browser tab froze).
+        const DRIFT_THRESHOLD_SECONDS = 0.20;
+        const CHECK_INTERVAL_MS = 500;
 
         const syncLoop = () => {
             const now = Date.now();
             const elapsed = now - syncStartTime;
 
-            if (!video.paused && isStarted) {
-                const expectedTime = Math.max(0, elapsed / 1000);
-                const drift = video.currentTime - expectedTime;
+            if (isStarted) {
+                if (video.paused && elapsed > 0) {
+                    video.play().catch(() => {});
+                } else if (now - lastCheckAt >= CHECK_INTERVAL_MS) {
+                    lastCheckAt = now;
+                    const expectedTime = Math.max(0, elapsed / 1000);
+                    const drift = Math.abs(video.currentTime - expectedTime);
 
-                if (Math.abs(drift) > 1.0) {
-                    video.currentTime = expectedTime;
-                    setRate(1.0);
-                    correcting = false;
-                } else if (now - lastCorrectionAt >= CORRECTION_INTERVAL_MS) {
-                    lastCorrectionAt = now;
-
-                    if (!correcting && Math.abs(drift) > ENTER_DRIFT) {
-                        correcting = true;
-                    } else if (correcting && Math.abs(drift) < EXIT_DRIFT) {
-                        correcting = false;
+                    if (drift > DRIFT_THRESHOLD_SECONDS) {
+                        video.currentTime = expectedTime;
                     }
-
-                    setRate(correcting ? (drift < 0 ? 1.03 : 0.97) : 1.0);
                 }
-            } else if (now >= syncStartTime && !isStarted) {
+            } else if (now >= syncStartTime) {
                 isStarted = true;
-                video.currentTime = 0.1;
-                video.play().then(() => {
-                    video.currentTime = Math.max(0, (Date.now() - syncStartTime) / 1000);
-                }).catch(() => {});
+                video.currentTime = 0.001;
+                video.play()
+                    .then(() => {
+                        video.currentTime = Math.max(0, (Date.now() - syncStartTime) / 1000);
+                    })
+                    .catch(() => {});
             }
 
             frameId = requestAnimationFrame(syncLoop);
@@ -184,27 +155,36 @@ export function SyncedVideo({ src, syncStartTime, onReady, ...props }: SyncedVid
         };
     }, [syncStartTime, blobUrl]);
 
-    // Nothing to render until the file is fully local — prevents the browser
-    // from ever attaching a partially-buffered network stream as the source,
-    // and prevents any premature native playback.
     if (!blobUrl) return null;
 
+    // Shift left by 0% on Left, -100% on Center, and -200% on Right.
+    // (If your page.tsx DisplayManager ALREADY shifts by screenOffsetX,
+    // change screenShift below to "0%" so it doesn't shift twice!)
+    const screenShift = screenID === "left" ? "0%" : screenID === "center" ? "-100%" : "-200%";
+
     return (
-        <video
-            ref={videoRef}
-            src={blobUrl}
-            preload="auto"
-            muted
-            playsInline
-            style={{
-                border: "none",
-                outline: "none",
-                boxShadow: "none",
-                transform: "scale(1.005)",
-                transformOrigin: "center center",
-            }}
-            className="w-full h-full object-cover border-0 outline-none"
-            {...props}
-        />
+        <div className="relative w-full h-full bg-black overflow-hidden">
+            <video
+                ref={videoRef}
+                src={blobUrl}
+                preload="auto"
+                muted
+                playsInline
+                style={{
+                    // Stretch the 16:9 video across all 3 vertical screens (300% width)
+                    width: "300%",
+                    height: "100%",
+                    transform: `translate3d(${screenShift}, 0, 0)`,
+                    transformOrigin: "top left",
+                    // REMOVED scale(1.005) to eliminate sub-pixel GPU stutter
+                    border: "none",
+                    outline: "none",
+                    boxShadow: "none",
+                    display: "block",
+                }}
+                className="absolute top-0 left-0 object-cover border-0 outline-none"
+                {...props}
+            />
+        </div>
     );
 }

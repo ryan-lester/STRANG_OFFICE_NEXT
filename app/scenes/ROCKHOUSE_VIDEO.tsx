@@ -1,12 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
-import { SyncedVideo, SceneProps } from "@/app/components/SyncedVideo";
 
-// Switched to CloudFront to protect your $100 credits
-const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
-export const VIDEO_URL = `${CF_URL}/videos/Strang_RockHouse_Screens.mp4`;
+export default function RockHouseVideo() {
+    // Switched to CloudFront to protect your $100 credits
+    const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
+    const VIDEO_URL = `${CF_URL}/videos/Strang_RockHouse_Screens.mp4`;
 
-export default function RockHouseVideo({ syncStartTime }: SceneProps) {
     return (
         <div className="w-[6480px] h-[3840px] bg-black relative overflow-hidden">
             {/* Background Video Layer */}
@@ -16,19 +15,14 @@ export default function RockHouseVideo({ syncStartTime }: SceneProps) {
                 transition={{ duration: 2 }}
                 className="absolute inset-0"
             >
-                {/* Was: raw <video autoPlay loop> with no syncStartTime — each
-                    screen just autoplayed independently whenever it happened to
-                    finish buffering, with zero connection to the other two.
-                    Now driven by SyncedVideo, which fully preloads the file and
-                    locks playback to the shared syncStartTime broadcast from the
-                    center screen. No autoPlay/loop here on purpose — restart on
-                    each pass is handled by the scene scheduler in page.tsx
-                    (matching how every other scene in MASTER_SCENES loops),
-                    so letting the native <video> loop too would just race it. */}
-                <SyncedVideo
-                    src={VIDEO_URL}
-                    syncStartTime={syncStartTime}
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="auto"
                     className="w-full h-full object-cover"
+                    src={VIDEO_URL}
                 />
 
                 {/* Subtle Vignette to keep corner text legible */}

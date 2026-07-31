@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import UIOverlay from "./components/UIOverlay";
-import { SceneProps, preloadVideo } from "./components/SyncedVideo";
 
 // --- SCENE IMPORTS ---
 import TimelapseScene from "./scenes/TimelapseScene";
@@ -27,17 +26,10 @@ import SLIDESHOW_DRAWING_ROCKHOUSE from "@/app/scenes/SLIDESHOW_DRAWING_ROCKHOUS
 import SLIDESHOW_ROCKHOUSE from "@/app/scenes/SLIDESHOW_ROCKHOUSE";
 import BTS_1 from "@/app/scenes/BTS_1";
 import MIAMI_VICE_ROCKHOUSE from "@/app/scenes/MIAMI_VICE_ROCKHOUSE";
-import RockHouseVideo, { VIDEO_URL as ROCKHOUSE_VIDEO_URL } from "@/app/scenes/ROCKHOUSE_VIDEO";
+import RockHouseVideo from "@/app/scenes/ROCKHOUSE_VIDEO";
 
-const MASTER_SCENES: {
-    id: string;
-    name: string;
-    duration: number;
-    component: React.ComponentType<SceneProps>;
-    theme: "dark" | "light";
-    videoUrls?: string[];
-}[] = [
-    { id: "rock_house_video", name: "Rock House Video", duration: 174000, component: RockHouseVideo, theme: "dark", videoUrls: [ROCKHOUSE_VIDEO_URL] },
+const MASTER_SCENES = [
+    { id: "rock_house_video", name: "Rock House Video", duration: 174000, component: RockHouseVideo, theme: "dark" },
     /*
         { id: "miami_vice", name: "Miami Vice Segment", duration: 62000, component: MIAMI_VICE_ROCKHOUSE, theme: "dark" },
     { id: "letters", name: "Strang Animation", duration: 23500, component: StrangLetters, theme: "light" },
@@ -68,19 +60,15 @@ function DisplayManager() {
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [isPreparing, setIsPreparing] = useState(false);
-    const [isSyncWaiting, setIsSyncWaiting] = useState(false);
-    const [countdown, setCountdown] = useState<number | null>(null);
     const [scale, setScale] = useState(1);
     const [playlist, setPlaylist] = useState(MASTER_SCENES.map(s => ({ id: s.id, loops: 1 })));
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentLoop, setCurrentLoop] = useState(1);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [syncStartTime, setSyncStartTime] = useState<number | null>(null);
-    const [readyScreens, setReadyScreens] = useState<Set<string>>(new Set());
-    const [preloadProgress, setPreloadProgress] = useState<number | null>(0);
 
     const broadcastState = (
-        type: "START_COUNTDOWN" | "EXECUTE_START" | "STOP" | "SCREEN_READY",
+        type: "EXECUTE_START" | "STOP",
         payload: any = {}
     ) => {
         const bc = new BroadcastChannel("strang_os_sync");
@@ -96,52 +84,20 @@ function DisplayManager() {
         return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
     }, []);
 
-    // --- SYNCHRONIZED COUNTDOWN & MESSAGING ENGINE ---
+    // --- MESSAGING ENGINE ---
     useEffect(() => {
         const bc = new BroadcastChannel("strang_os_sync");
         bc.onmessage = (event) => {
-            const { type, isPlaying, index, playlist: list, currentLoop, startTime, screenID: fromScreen } = event.data;
+            const { type, isPlaying, index, playlist: list, currentLoop, startTime } = event.data;
 
-            if (type === "SCREEN_READY") {
-                setReadyScreens((prev) => new Set(prev).add(fromScreen));
-                return;
-            }
-
-            if (type === "START_COUNTDOWN") {
-                setPlaylist(list);
-                setIsPlaying(true);
-                setIsSyncWaiting(true);
-                setCurrentIndex(index);
-                setCurrentLoop(currentLoop);
-                setSyncStartTime(startTime);
-
-                // Run visual countdown matching the 3000ms future timestamp
-                const updateCountdown = () => {
-                    const remaining = Math.ceil((startTime - Date.now()) / 1000);
-                    if (remaining > 0) {
-                        setCountdown(remaining);
-                        requestAnimationFrame(updateCountdown);
-                    } else {
-                        setCountdown(null);
-                        setIsSyncWaiting(false);
-                        setIsPreparing(false);
-                    }
-                };
-                requestAnimationFrame(updateCountdown);
-
-            } else if (type === "EXECUTE_START") {
-                // Instant zero-drift transition for subsequent scene loops
+            if (type === "EXECUTE_START") {
                 setPlaylist(list);
                 setIsPlaying(true);
                 setCurrentIndex(index);
                 setCurrentLoop(currentLoop);
                 setSyncStartTime(startTime);
-                setIsSyncWaiting(false);
-
             } else if (type === "STOP") {
                 setIsPlaying(false);
-                setIsSyncWaiting(false);
-                setCountdown(null);
                 setSyncStartTime(null);
             }
         };
@@ -155,57 +111,9 @@ function DisplayManager() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // --- PROACTIVE PRELOAD ---
-    // Starts downloading whatever video the current playlist needs the
-    // moment this screen's page loads — independent of isPlaying/Launch —
-    // so the file is already 100% local well before anyone hits Launch.
-    // Once done, this screen announces itself as ready; center only allows
-    // Launch once left, center, and right have all reported in.
-    const neededVideoUrls = playlist
-        .flatMap((item) => MASTER_SCENES.find((s) => s.id === item.id)?.videoUrls || [])
-        .filter((v, i, arr) => arr.indexOf(v) === i);
-    const neededVideoUrlsKey = neededVideoUrls.join(",");
-
-    useEffect(() => {
-        let cancelled = false;
-
-        const markReady = () => {
-            if (cancelled) return;
-            setPreloadProgress(100);
-            setReadyScreens((prev) => new Set(prev).add(screenID));
-            broadcastState("SCREEN_READY", { screenID });
-        };
-
-        if (neededVideoUrls.length === 0) {
-            markReady();
-            return;
-        }
-
-        setPreloadProgress(0);
-        Promise.all(
-            neededVideoUrls.map(
-                (url) =>
-                    new Promise<void>((resolve, reject) => {
-                        preloadVideo(url, (pct) => {
-                            if (pct !== null && !cancelled) setPreloadProgress(pct);
-                        })
-                            .then(() => resolve())
-                            .catch(reject);
-                    })
-            )
-        )
-            .then(markReady)
-            .catch((err) => console.error("Preload failed:", err));
-
-        return () => {
-            cancelled = true;
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [neededVideoUrlsKey, screenID]);
-
     // --- HIGH-PRECISION CLOCK FOR NEXT-SCENE ROLLER ---
     useEffect(() => {
-        if (!isPlaying || playlist.length === 0 || !syncStartTime || isSyncWaiting) return;
+        if (!isPlaying || playlist.length === 0 || !syncStartTime) return;
 
         const activeSceneData = playlist[currentIndex];
         const sceneDef = MASTER_SCENES.find(s => s.id === activeSceneData.id);
@@ -253,7 +161,7 @@ function DisplayManager() {
 
         frameId = requestAnimationFrame(checkSync);
         return () => cancelAnimationFrame(frameId);
-    }, [isPlaying, currentIndex, currentLoop, playlist, screenID, syncStartTime, isSyncWaiting]);
+    }, [isPlaying, currentIndex, currentLoop, playlist, screenID, syncStartTime]);
 
     const enterFullscreen = () => {
         const elem = document.documentElement;
@@ -264,21 +172,27 @@ function DisplayManager() {
         }
     };
 
-    const allScreensReady = ["left", "center", "right"].every((id) => readyScreens.has(id));
-
     const handleGenerate = () => {
-        if (isPreparing || !allScreensReady) return;
+        if (isPreparing) return;
         setIsPreparing(true);
 
-        // Schedule exact playback start 3,000 milliseconds in the future
-        const targetStart = Date.now() + 3000;
-        broadcastState("START_COUNTDOWN", {
+        const targetStart = Date.now() + 1000;
+
+        broadcastState("EXECUTE_START", {
             isPlaying: true,
             index: 0,
             playlist,
             currentLoop: 1,
             startTime: targetStart,
         });
+
+        setTimeout(() => {
+            setIsPlaying(true);
+            setCurrentIndex(0);
+            setCurrentLoop(1);
+            setSyncStartTime(targetStart);
+            setIsPreparing(false);
+        }, 1000);
     };
 
     const handleExit = () => {
@@ -286,8 +200,6 @@ function DisplayManager() {
             document.exitFullscreen();
         }
         setIsPlaying(false);
-        setIsSyncWaiting(false);
-        setCountdown(null);
         setSyncStartTime(null);
         broadcastState("STOP");
     };
@@ -336,31 +248,27 @@ function DisplayManager() {
                         </div>
                     </div>
 
-                    {/* Single Launch Button */}
-                    <button
-                        onClick={handleGenerate}
-                        disabled={isPreparing || playlist.length === 0 || !allScreensReady}
-                        className="w-full bg-white text-black py-6 text-xl font-bold tracking-wider uppercase hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-10"
-                    >
-                        {isPreparing
-                            ? "Initializing..."
-                            : !allScreensReady
-                                ? preloadProgress !== null && preloadProgress < 100
-                                    ? `Preloading Video... ${preloadProgress}%`
-                                    : `Waiting on Screens (${readyScreens.size}/3)`
-                                : "Launch"}
-                    </button>
-                    {!allScreensReady && (
-                        <p className="text-xs text-zinc-600 uppercase tracking-wider mt-3 text-center">
-                            {["left", "center", "right"].map((id) => `${id} ${readyScreens.has(id) ? "✓" : "…"}`).join("   ")}
-                        </p>
-                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                        <button
+                            onClick={enterFullscreen}
+                            className="w-full bg-zinc-900 border border-white/10 text-white py-7 font-bold tracking-wider uppercase hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                        >
+                            {isFullscreen ? "Fullscreen Ready" : "1. Enter Fullscreen"}
+                        </button>
+                        <button
+                            onClick={handleGenerate}
+                            disabled={isPreparing || playlist.length === 0}
+                            className="w-full bg-white text-black py-7 font-bold tracking-wider uppercase hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-10"
+                        >
+                            {isPreparing ? "Syncing Nodes..." : "2. Launch Playback"}
+                        </button>
+                    </div>
                 </header>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-10">
                     <section className="mb-12 border-b border-white/5 pb-12">
                         <div className="flex justify-between items-center mb-6">
-                            <p className="text-xs text-zinc-600 tracking-wider uppercase">Sequence</p>
+                            <p className="text-xs text-zinc-600 tracking-wider uppercase">Active Sequence</p>
                             <button onClick={() => setPlaylist([])} className="text-xs text-red-900 hover:text-red-500 uppercase tracking-wider">Clear All</button>
                         </div>
                         <div className="space-y-2">
@@ -413,7 +321,7 @@ function DisplayManager() {
                     </section>
 
                     <section className="pb-32">
-                        <p className="text-xs text-zinc-600 tracking-wider uppercase mb-6">Library</p>
+                        <p className="text-xs text-zinc-600 tracking-wider uppercase mb-6">Master Library</p>
                         <div className="grid grid-cols-1 gap-2">
                             {MASTER_SCENES.map(scene => (
                                 <button
@@ -441,7 +349,6 @@ function DisplayManager() {
             className={`fixed inset-0 bg-black font-din-condensed overflow-hidden select-none ${isFullscreen ? "cursor-none" : ""}`}
             style={{ border: "none", outline: "none", margin: 0, padding: 0 }}
         >
-            {/* Nuclear CSS Reset to kill any rogue borders/rules coming from child scene wrappers */}
             <style jsx global>{`
               main * {
                 border-color: transparent !important;
@@ -469,26 +376,11 @@ function DisplayManager() {
                     }}
                 >
                     <div className="w-full h-full">
-                        <ActiveComponent syncStartTime={syncStartTime} />
+                        <ActiveComponent />
                     </div>
                     <UIOverlay theme={activeTheme} />
                 </div>
             </div>
-
-            {/* --- SYNCHRONIZED 3-SECOND COUNTDOWN OVERLAY --- */}
-            {isSyncWaiting && (
-                <div className="fixed inset-0 bg-black z-[10005] flex flex-col items-center justify-center font-din-condensed select-none">
-                    <p className="text-zinc-500 text-sm tracking-wider uppercase mb-4">
-
-                    </p>
-                    <div className="text-white text-8xl font-bold tracking-normal">
-                        {countdown !== null ? `00:0${countdown}` : "LOADING"}
-                    </div>
-                    <p className="text-zinc-600 text-xs tracking-wider uppercase mt-4">
-                        Connecting...
-                    </p>
-                </div>
-            )}
 
             {/* Enter Full Screen Button */}
             {!isFullscreen && (
