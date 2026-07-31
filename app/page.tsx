@@ -122,7 +122,8 @@ function DisplayManager() {
         let frameId: number;
 
         const checkSync = () => {
-            const now = Date.now();
+            // Replaced Date.now() with performance.now() for monotonic, sub-millisecond precision
+            const now = performance.now();
             const elapsed = now - syncStartTime;
 
             if (elapsed >= duration) {
@@ -176,7 +177,8 @@ function DisplayManager() {
         if (isPreparing) return;
         setIsPreparing(true);
 
-        const targetStart = Date.now() + 1000;
+        // Replaced Date.now() with performance.now()
+        const targetStart = performance.now() + 1000;
 
         broadcastState("EXECUTE_START", {
             isPlaying: true,
