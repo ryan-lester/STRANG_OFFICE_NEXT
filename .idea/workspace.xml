@@ -5,7 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="69337836-d86c-4c77-8e76-00e5e3620e28" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.env.local" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/interiors/InteriorsListClient.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/interiors/[slug]/ProjectDetailClient.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/interiors/[slug]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/interiors/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sanity/lib/client.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/studio-strang/schemaTypes/interior.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/interior/[slug]/test/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/studio-strang/schemaTypes/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/studio-strang/schemaTypes/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +30,7 @@
       <list>
         <option value="package.json" />
         <option value="TypeScript JSX File" />
+        <option value="TypeScript File" />
       </list>
     </option>
   </component>
@@ -74,6 +88,7 @@
       <workItem from="1784918235651" duration="18635000" />
       <workItem from="1785443990145" duration="4525000" />
       <workItem from="1785955841169" duration="3643000" />
+      <workItem from="1786551682993" duration="5643000" />
     </task>
     <servers />
   </component>
