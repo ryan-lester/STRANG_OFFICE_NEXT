@@ -4,6 +4,11 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function InteriorsListClient({ projects }: { projects: any[] }) {
+    // Sort projects alphabetically by title
+    const sortedProjects = [...projects].sort((a, b) =>
+        (a.title || "").localeCompare(b.title || "")
+    );
+
     return (
         <motion.main
             initial={{ opacity: 0 }}
@@ -31,7 +36,7 @@ export default function InteriorsListClient({ projects }: { projects: any[] }) {
             {/* Dense Inline Project Navigation List */}
             <div className="w-full max-w-[1400px] mx-auto mb-12 md:mb-16 text-left">
                 <div className="flex flex-wrap gap-x-4 md:gap-x-5 gap-y-2 md:gap-y-3 leading-tight items-center justify-center md:justify-start">
-                    {projects.map((project) => (
+                    {sortedProjects.map((project) => (
                         <Link
                             key={`nav-${project._id}`}
                             href={`/interiors/${project.slug?.current}`}
@@ -47,7 +52,7 @@ export default function InteriorsListClient({ projects }: { projects: any[] }) {
 
             {/* Balanced 1400px grid layout */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 lg:gap-x-16 gap-y-16 lg:gap-y-20 w-full max-w-[1400px] mx-auto">
-                {projects.map((project, index) => (
+                {sortedProjects.map((project, index) => (
                     <Link
                         key={project._id}
                         href={`/interiors/${project.slug?.current}`}
