@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // Using your CloudFront URL to hit that 1TB free tier
 const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
-const IMAGE_URL = `${CF_URL}/mitch_slideshows_march_2026/Slideshow+15/STRANG_SCREENS_SLIDESHOW-45.jpg`;
+const IMAGE_URL = `${CF_URL}/mitch_slideshows_march_2026/Slideshow 15/Strang Foyer update43-2.jpg`;
 
 export default function SLIDESHOW_ROCKHOUSE() {
     const DISPLAY_DURATION = 180000; // 3 minutes

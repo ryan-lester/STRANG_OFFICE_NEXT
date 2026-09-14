@@ -7,12 +7,12 @@ import { motion, AnimatePresence } from "framer-motion";
 const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
 
 const IMAGES = [
-    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+03/STRANG_SCREENS_SLIDESHOW-5.jpg`,
-    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+03/STRANG_SCREENS_SLIDESHOW-6.jpg`,
-    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+03/STRANG_SCREENS_SLIDESHOW-7.jpg`,
-    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+03/STRANG_SCREENS_SLIDESHOW-8.jpg`,
-    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+03/STRANG_SCREENS_SLIDESHOW-9.jpg`,
-    `${CF_URL}/mitch_slideshows_march_2026/Slideshow+03/STRANG_SCREENS_SLIDESHOW-10.jpg`,
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow 03/Strang Foyer update4-2.jpg`,
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow 03/Strang Foyer update5-2.jpg`,
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow 03/Strang Foyer update6-2.jpg`,
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow 03/Strang Foyer update7-2.jpg`,
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow 03/Strang Foyer update8-2.jpg`,
+    `${CF_URL}/mitch_slideshows_march_2026/Slideshow 03/Strang Foyer update9-2.jpg`,
 ];
 
 export default function SLIDESHOW_WILDWOOD_PALM() {

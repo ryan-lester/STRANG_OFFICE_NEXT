@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // Using your CloudFront domain to keep data transfer at $0
 const CF_URL = "https://d3arwlkv4f48kq.cloudfront.net";
-const IMAGE_URL = `${CF_URL}/mitch_slideshows_march_2026/Slideshow+10/STRANG_SCREENS_SLIDESHOW-28.jpg`;
+const IMAGE_URL = `${CF_URL}/mitch_slideshows_march_2026/Slideshow 10/Strang Foyer update26-2.jpg`;
 
 export default function SLIDESHOW_KIAORA() {
     const DISPLAY_DURATION = 180000; // 3 minutes
