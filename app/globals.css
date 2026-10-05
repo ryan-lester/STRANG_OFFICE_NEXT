@@ -16,3 +16,31 @@
     letter-spacing: 0.1em;
   }
 }
+
+@font-face {
+  font-family: "D-DINCondensed";
+  src: url("/fonts/D-DINCondensed.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "UntitledSans";
+  src: url("/fonts/UntitledSans-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+:root {
+  --background: #f1f1f1;
+  --foreground: #000000;
+}
