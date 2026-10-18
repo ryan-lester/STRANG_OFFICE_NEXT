@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="69337836-d86c-4c77-8e76-00e5e3620e28" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/prototype/PrototypeHomepageClient.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/prototype/page.tsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/studio-strang/schemaTypes/interior.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/interiors/[slug]/ProjectDetailClient.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/interiors/[slug]/ProjectDetailClient.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/studio-strang" beforeDir="false" afterPath="$PROJECT_DIR$/studio-strang" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/studio-strang/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/studio-strang/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/studio-strang/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/studio-strang/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/studio-strang/schemaTypes/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/studio-strang/schemaTypes/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -18,8 +24,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="package.json" />
-        <option value="TypeScript JSX File" />
         <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
@@ -79,6 +85,7 @@
       <workItem from="1785955841169" duration="3643000" />
       <workItem from="1786551682993" duration="15406000" />
       <workItem from="1789391192239" duration="2788000" />
+      <workItem from="1792288043658" duration="3120000" />
     </task>
     <servers />
   </component>
