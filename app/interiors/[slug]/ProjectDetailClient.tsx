@@ -5,11 +5,64 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { PortableText } from '@portabletext/react';
 
+/*
+    Body copy measured from strang.design: Untitled Sans, 16px,
+    1.3 line height (20.8px), no extra letter spacing.
+    Paragraph gap = one line of text.
+*/
+const BODY_STYLE = {
+    fontFamily: '"UntitledSans", sans-serif',
+    fontSize: '16px',
+    lineHeight: 1.3,
+    letterSpacing: 'normal',
+};
+
+/*
+    Paragraphs from Sanity, shown exactly as typed there:
+    - Each paragraph (Enter in Sanity) is its own block, with one line of
+      space between paragraphs (the gap on the wrapper below).
+    - Line breaks inside a paragraph (Shift+Enter in Sanity) are kept,
+      thanks to whitespace-pre-line on the wrapper.
+    - Empty paragraphs (Enter pressed twice in Sanity) are skipped, so the
+      space between paragraphs is always exactly one line.
+*/
+const isEmptyBlock = (value: any) =>
+    !value?.children?.some((child: any) => typeof child?.text === 'string' && child.text.trim() !== '');
+
 const portableTextComponents = {
     block: {
-        normal: ({ children }: any) => <p className="mb-5 last:mb-0">{children}</p>,
+        normal: ({ children, value }: any) =>
+            isEmptyBlock(value) ? null : <p className="m-0">{children}</p>,
     },
 };
+
+// Space between paragraphs = one line of text (set inline so it always applies)
+const PARAGRAPH_WRAPPER_STYLE = { display: 'flex', flexDirection: 'column' as const, gap: '1.3em' };
+
+function Description({ value }: { value: any }) {
+    if (!value) return null;
+
+    // Plain-text field: split on blank lines into paragraphs
+    if (typeof value === 'string') {
+        return (
+            <div className="whitespace-pre-line" style={PARAGRAPH_WRAPPER_STYLE}>
+                {value
+                    .split(/\n\s*\n/)
+                    .filter((para) => para.trim() !== '')
+                    .map((para, i) => (
+                        <p key={i} className="m-0">{para.trim()}</p>
+                    ))}
+            </div>
+        );
+    }
+
+    // Rich text (Portable Text) field
+    return (
+        <div className="whitespace-pre-line" style={PARAGRAPH_WRAPPER_STYLE}>
+            <PortableText value={value} components={portableTextComponents} />
+        </div>
+    );
+}
 
 type GalleryImg = { url: string; aspectRatio?: number };
 
@@ -161,28 +214,27 @@ export default function ProjectDetailClient({ project }: { project: any }) {
                     </Link>
                 </div>
 
+                {/*
+                    Fixed layout — identical on every project:
+                    text column 35% on the left, cover photo 65% on the right,
+                    both starting at the same top line. The photo always has the
+                    same shape, so it's the same size on every page; the text
+                    simply runs as long as it needs to.
+                */}
                 <div className="flex flex-col md:flex-row gap-10 lg:gap-16 max-w-[1800px] mx-auto items-start">
                     <div className="w-full md:w-[35%] flex flex-col shrink-0">
                         <h1 className="text-3xl md:text-5xl lg:text-6xl font-normal uppercase leading-none mb-6 lg:mb-8 text-black">
                             {project.title}
                         </h1>
 
-                        <div
-                            className="text-black text-lg leading-[1.75rem] font-normal max-w-none"
-                            style={{ fontFamily: '"UntitledSans", sans-serif' }}
-                        >
-                            {project.description ? (
-                                <PortableText
-                                    value={project.description}
-                                    components={portableTextComponents}
-                                />
-                            ) : null}
+                        <div className="text-black font-normal max-w-none" style={BODY_STYLE}>
+                            <Description value={project.description} />
                         </div>
 
                         <div className="mt-12 lg:mt-16 uppercase text-base md:text-lg text-black">
                             <h3 className="font-normal mb-4 lg:mb-6">Project Information</h3>
 
-                            <div className="grid grid-cols-[160px_1fr] gap-x-4 gap-y-2 lg:gap-y-3 font-normal">
+                            <div className="grid grid-cols-[160px_1fr] gap-x-4 gap-y-0.5 font-normal">
                                 {project.location && (
                                     <>
                                         <span className="text-[#828282]">Location</span>
@@ -205,13 +257,14 @@ export default function ProjectDetailClient({ project }: { project: any }) {
                         </div>
                     </div>
 
-                    {/* Cover photo at its natural proportions — no cropping */}
-                    <div className="w-full md:w-[65%]">
+                    {/* Cover photo — fixed 3:2 frame, cropped to fill if the
+                        photo is a different shape. Change aspect-[3/2] to adjust. */}
+                    <div className="w-full md:w-[65%] aspect-[3/2] overflow-hidden bg-zinc-200">
                         {project.coverPhoto && (
                             <img
                                 src={project.coverPhoto}
                                 alt={`${project.title} Cover`}
-                                className="block w-full h-auto"
+                                className="block w-full h-full object-cover"
                             />
                         )}
                     </div>

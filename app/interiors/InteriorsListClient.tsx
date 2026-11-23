@@ -1,7 +1,11 @@
 "use client";
 
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+
+// useLayoutEffect in the browser (no flicker), useEffect on the server (no warning)
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 // Matches strang.design's .font-title class
 const DIN_STYLE = { fontFamily: '"D-DINCondensed", sans-serif', letterSpacing: '0.3px' };
@@ -18,10 +22,101 @@ const pageStyles = `
 @media (max-width: 1650px) { .strang-wrapper { padding: 0 2rem; } }
 `;
 
+/* ------------------------------------------------------------------
+   Project name list — centered block, left-aligned names.
+   CSS alone can't shrink a wrapping row to its longest line, so this
+   measures each name, works out where the lines will break, and sets
+   the list's width to exactly the longest line. Centering that width
+   makes the space on the right equal to the space on the left.
+------------------------------------------------------------------- */
+function ProjectNameList({ projects }: { projects: any[] }) {
+    const outerRef = useRef<HTMLDivElement>(null);
+    const listRef = useRef<HTMLDivElement>(null);
+    const [fitWidth, setFitWidth] = useState<number | null>(null);
+
+    useIsoLayoutEffect(() => {
+        const outer = outerRef.current;
+        const list = listRef.current;
+        if (!outer || !list) return;
+
+        const measure = () => {
+            const available = outer.clientWidth;
+            const gap = parseFloat(getComputedStyle(list).columnGap) || 0;
+            let line = 0;
+            let widest = 0;
+            for (const el of Array.from(list.children) as HTMLElement[]) {
+                const w = el.getBoundingClientRect().width;
+                if (line > 0 && line + gap + w > available) {
+                    // This name wraps to a new line
+                    widest = Math.max(widest, line);
+                    line = w;
+                } else {
+                    line = line > 0 ? line + gap + w : w;
+                }
+            }
+            widest = Math.max(widest, line);
+            // +1px guards against sub-pixel rounding causing an extra wrap
+            setFitWidth(Math.min(available, Math.ceil(widest) + 1));
+        };
+
+        measure();
+
+        // Re-measure when the page resizes or the web font finishes loading
+        const ro = new ResizeObserver(measure);
+        ro.observe(outer);
+        Array.from(list.children).forEach((el) => ro.observe(el as Element));
+        let active = true;
+        document.fonts?.ready.then(() => active && measure());
+
+        return () => {
+            active = false;
+            ro.disconnect();
+        };
+    }, [projects]);
+
+    return (
+        /* Same insets as the main site */
+        <div className="md:px-8 xl:px-12">
+            <div ref={outerRef}>
+                <div
+                    ref={listRef}
+                    className="mx-auto flex flex-wrap gap-x-4 gap-y-1"
+                    style={fitWidth ? { width: fitWidth } : undefined}
+                >
+                    {projects.map((project) => (
+                        <Link
+                            key={`nav-${project._id}`}
+                            href={`/interiors/${project.slug?.current}`}
+                            className="shrink-0 text-base leading-6 font-normal text-black hover:text-[#828282] transition-colors uppercase"
+                            /* Explicitly forcing the font so link resets don't override it */
+                            style={DIN_STYLE}
+                        >
+                            {project.title}
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function InteriorsListClient({ projects }: { projects: any[] }) {
-    // Sort projects alphabetically by title
-    const sortedProjects = [...projects].sort((a, b) =>
-        (a.title || "").localeCompare(b.title || "")
+    /*
+        Sort projects alphabetically by title, the way they read on screen.
+        Titles are cleaned up first so invisible differences in the CMS
+        (extra or non-breaking spaces, dashes, curly quotes, upper vs lower
+        case) can't push one title out of order. Numbers sort naturally,
+        so "Residence 2" comes before "Residence 10".
+    */
+    const sortKey = (title?: string) =>
+        (title || "")
+            .normalize("NFKC")
+            .replace(/[^\p{L}\p{N}]+/gu, " ") // punctuation and odd spaces → one plain space
+            .trim()
+            .toLowerCase();
+
+    const sortedProjects = [...(projects ?? [])].sort((a, b) =>
+        sortKey(a.title).localeCompare(sortKey(b.title), "en", { numeric: true, sensitivity: "base" })
     );
 
     return (
@@ -56,20 +151,8 @@ export default function InteriorsListClient({ projects }: { projects: any[] }) {
                 </header>
 
                 <section className="strang-wrapper flex flex-col gap-10 md:gap-16 lg:gap-20">
-                    {/* Project name list — same insets and spacing as the main site */}
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 md:px-8 xl:px-12">
-                        {sortedProjects.map((project) => (
-                            <Link
-                                key={`nav-${project._id}`}
-                                href={`/interiors/${project.slug?.current}`}
-                                className="text-lg leading-7 font-normal text-black hover:text-[#828282] transition-colors uppercase"
-                                /* Explicitly forcing the font so link resets don't override it */
-                                style={DIN_STYLE}
-                            >
-                                {project.title}
-                            </Link>
-                        ))}
-                    </div>
+                    {/* Project name list — centered, left-aligned, equal space on both sides */}
+                    <ProjectNameList projects={sortedProjects} />
 
                     {/* Image grid — inset 1.33rem like the main site's gallery */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-x-[1.33rem] gap-y-12 lg:gap-y-16 px-0 md:px-[1.33rem]">
